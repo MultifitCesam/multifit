@@ -19,6 +19,7 @@ import MessagesPage from "./pages/MessagesPage";
 import ChatThreadPage from "./pages/ChatThreadPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import NotFound from "./pages/NotFound";
+import OnboardingPage from "./pages/OnboardingPage";
 
 const queryClient = new QueryClient();
 
