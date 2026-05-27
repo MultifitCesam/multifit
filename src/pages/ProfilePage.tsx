@@ -4,6 +4,7 @@ import { User, Save, Loader2, Camera, LogOut, Apple, Settings, Lock, Globe, Exte
 import { useNavigate } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
 import SmartwatchPanel from "@/components/SmartwatchPanel";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -186,13 +187,16 @@ export default function ProfilePage() {
     <div className="min-h-screen pb-28 px-4 pt-6 max-w-lg mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold font-display">Meu <span className="text-gradient">Perfil</span></h1>
-        <button
-          onClick={async () => { await signOut(); navigate("/auth"); }}
-          className="p-2 rounded-xl bg-secondary text-muted-foreground hover:text-destructive transition"
-          aria-label="Sair"
-        >
-          <LogOut size={16} />
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button
+            onClick={async () => { await signOut(); navigate("/auth"); }}
+            className="p-2 rounded-xl bg-secondary text-muted-foreground hover:text-destructive transition"
+            aria-label="Sair"
+          >
+            <LogOut size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Avatar */}
