@@ -105,7 +105,7 @@ export default function HomePage() {
         <motion.button
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          onClick={() => navigate("/profile")}
+          onClick={() => navigate("/onboarding")}
           className="w-full bg-gradient-primary text-primary-foreground rounded-2xl p-5 mb-6 text-left"
         >
           <div className="flex items-center gap-3">
