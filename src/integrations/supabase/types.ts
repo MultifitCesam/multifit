@@ -62,6 +62,54 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_stats: {
+        Row: {
+          active_minutes: number
+          active_minutes_goal: number
+          calories: number
+          calories_goal: number
+          created_at: string
+          day: string
+          id: string
+          steps: number
+          steps_goal: number
+          updated_at: string
+          user_id: string
+          water_ml: number
+          water_ml_goal: number
+        }
+        Insert: {
+          active_minutes?: number
+          active_minutes_goal?: number
+          calories?: number
+          calories_goal?: number
+          created_at?: string
+          day?: string
+          id?: string
+          steps?: number
+          steps_goal?: number
+          updated_at?: string
+          user_id: string
+          water_ml?: number
+          water_ml_goal?: number
+        }
+        Update: {
+          active_minutes?: number
+          active_minutes_goal?: number
+          calories?: number
+          calories_goal?: number
+          created_at?: string
+          day?: string
+          id?: string
+          steps?: number
+          steps_goal?: number
+          updated_at?: string
+          user_id?: string
+          water_ml?: number
+          water_ml_goal?: number
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string
@@ -304,6 +352,7 @@ export type Database = {
           is_private: boolean
           level: string | null
           name: string
+          onboarded: boolean
           sleep_hours: number | null
           sleep_quality: string | null
           training_time: string | null
@@ -327,6 +376,7 @@ export type Database = {
           is_private?: boolean
           level?: string | null
           name?: string
+          onboarded?: boolean
           sleep_hours?: number | null
           sleep_quality?: string | null
           training_time?: string | null
@@ -350,6 +400,7 @@ export type Database = {
           is_private?: boolean
           level?: string | null
           name?: string
+          onboarded?: boolean
           sleep_hours?: number | null
           sleep_quality?: string | null
           training_time?: string | null
