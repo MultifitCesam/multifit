@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Dumbbell, Flame, Footprints, Timer, TrendingUp, Zap, Moon, Bot, Apple, User, Bell } from "lucide-react";
+import { Dumbbell, Flame, Footprints, Timer, TrendingUp, Zap, Moon, Bot, Apple, User, Bell, Droplet } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-import StatCard from "@/components/StatCard";
+import EditableStatCard from "@/components/EditableStatCard";
 import StreakBadge from "@/components/StreakBadge";
 import { useProfile } from "@/hooks/useProfile";
+import { useDailyStats } from "@/hooks/useDailyStats";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -20,10 +21,18 @@ const quotes = [
 
 export default function HomePage() {
   const { profile, loading } = useProfile();
+  const { stats, update } = useDailyStats();
   const { user } = useAuth();
   const navigate = useNavigate();
   const quote = quotes[Math.floor(Math.random() * quotes.length)];
   const [unread, setUnread] = useState(0);
+
+  // First-time users: send to onboarding wizard
+  useEffect(() => {
+    if (!loading && profile && !(profile as any).onboarded) {
+      navigate("/onboarding", { replace: true });
+    }
+  }, [loading, profile, navigate]);
 
   useEffect(() => {
     if (!user) return;
@@ -36,7 +45,7 @@ export default function HomePage() {
     return () => { supabase.removeChannel(ch); };
   }, [user?.id]);
 
-  const isProfileComplete = !!profile?.name;
+  const isProfileComplete = !!profile?.name && (profile as any)?.onboarded;
 
   return (
     <div className="min-h-screen pb-24 px-4 pt-6 max-w-lg mx-auto">
@@ -96,7 +105,7 @@ export default function HomePage() {
         <motion.button
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          onClick={() => navigate("/profile")}
+          onClick={() => navigate("/onboarding")}
           className="w-full bg-gradient-primary text-primary-foreground rounded-2xl p-5 mb-6 text-left"
         >
           <div className="flex items-center gap-3">
@@ -109,15 +118,34 @@ export default function HomePage() {
         </motion.button>
       )}
 
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-lg font-bold font-display">Hoje</h2>
+        <span className="text-[10px] text-muted-foreground uppercase tracking-wide">toque para editar</span>
+      </div>
       <div className="grid grid-cols-2 gap-3 mb-6">
-        <StatCard icon={Flame} label="Calorias" value="420" subtitle="queimadas hoje" variant="primary" />
-        <StatCard icon={Footprints} label="Passos" value="6.230" subtitle="de 10.000" variant="accent" />
-        <StatCard icon={Timer} label="Tempo Ativo" value="45 min" subtitle="hoje" />
-        <StatCard
-          icon={Moon}
-          label="Sono"
-          value={`${profile?.sleep_hours ?? 7}h`}
-          subtitle={profile?.sleep_quality ?? "boa"}
+        <EditableStatCard
+          icon={Flame} label="Calorias" variant="primary"
+          value={stats?.calories ?? 0} goal={stats?.calories_goal ?? 500} unit="kcal"
+          quickSteps={[50, 200]}
+          onChange={(v) => update({ calories: v })}
+        />
+        <EditableStatCard
+          icon={Footprints} label="Passos" variant="accent"
+          value={stats?.steps ?? 0} goal={stats?.steps_goal ?? 10000}
+          quickSteps={[500, 2000]}
+          onChange={(v) => update({ steps: v })}
+        />
+        <EditableStatCard
+          icon={Timer} label="Tempo ativo"
+          value={stats?.active_minutes ?? 0} goal={stats?.active_minutes_goal ?? 60} unit="min"
+          quickSteps={[10, 30]}
+          onChange={(v) => update({ active_minutes: v })}
+        />
+        <EditableStatCard
+          icon={Droplet} label="Água"
+          value={stats?.water_ml ?? 0} goal={stats?.water_ml_goal ?? 2000} unit="ml"
+          quickSteps={[250, 500]}
+          onChange={(v) => update({ water_ml: v })}
         />
       </div>
 
