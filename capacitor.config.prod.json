@@ -1,0 +1,17 @@
+{
+  "appId": "app.multifit",
+  "appName": "MultiFit",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#0a0b0d",
+      "showSpinner": false,
+      "androidSplashResourceName": "splash"
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#0a0b0d"
+    }
+  }
+}
