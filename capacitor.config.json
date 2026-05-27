@@ -4,7 +4,8 @@
   "webDir": "dist",
   "server": {
     "url": "https://333d3eeb-6dc8-4e08-a509-831f5caac359.lovableproject.com?forceHideBadge=true",
-    "cleartext": true
+    "cleartext": true,
+    "androidScheme": "https"
   },
   "plugins": {
     "SplashScreen": {
