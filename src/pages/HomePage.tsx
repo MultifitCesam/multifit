@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Dumbbell, Flame, Footprints, Timer, TrendingUp, Zap, Moon, Bot, Apple, User, Bell } from "lucide-react";
+import { Dumbbell, Flame, Footprints, Timer, TrendingUp, Zap, Moon, Bot, Apple, User, Bell, Droplet } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
-import StatCard from "@/components/StatCard";
+import EditableStatCard from "@/components/EditableStatCard";
 import StreakBadge from "@/components/StreakBadge";
 import { useProfile } from "@/hooks/useProfile";
+import { useDailyStats } from "@/hooks/useDailyStats";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -20,10 +21,18 @@ const quotes = [
 
 export default function HomePage() {
   const { profile, loading } = useProfile();
+  const { stats, update } = useDailyStats();
   const { user } = useAuth();
   const navigate = useNavigate();
   const quote = quotes[Math.floor(Math.random() * quotes.length)];
   const [unread, setUnread] = useState(0);
+
+  // First-time users: send to onboarding wizard
+  useEffect(() => {
+    if (!loading && profile && !(profile as any).onboarded) {
+      navigate("/onboarding", { replace: true });
+    }
+  }, [loading, profile, navigate]);
 
   useEffect(() => {
     if (!user) return;
@@ -36,7 +45,7 @@ export default function HomePage() {
     return () => { supabase.removeChannel(ch); };
   }, [user?.id]);
 
-  const isProfileComplete = !!profile?.name;
+  const isProfileComplete = !!profile?.name && (profile as any)?.onboarded;
 
   return (
     <div className="min-h-screen pb-24 px-4 pt-6 max-w-lg mx-auto">
