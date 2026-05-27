@@ -22,6 +22,7 @@ export interface DBProfile {
   training_time: "manha" | "tarde" | "noite";
   allergies: string | null;
   dietary_restrictions: string | null;
+  onboarded: boolean;
 }
 
 export function useProfile() {
