@@ -1,5 +1,6 @@
 export interface UserProfile {
   name: string;
+  gender?: "masculino" | "feminino" | "outro" | null;
   age: number;
   weight: number;
   height: number;
@@ -10,7 +11,10 @@ export interface UserProfile {
   sleepQuality: "ruim" | "regular" | "boa" | "excelente";
   weeklyFrequency: number;
   trainingTime: "manha" | "tarde" | "noite";
+  focusAreas?: string | null;
+  healthConditions?: string | null;
 }
+
 
 export interface Exercise {
   name: string;
