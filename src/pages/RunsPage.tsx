@@ -504,8 +504,8 @@ export default function RunsPage() {
         <Stat label="Calorias" value={String(totalCalories)} unit="" />
       </div>
 
-      {/* PWA Install hint */}
-      <PWAInstallHint />
+
+
 
       {/* Map preview + start */}
       <div className="relative rounded-2xl overflow-hidden glow-border mb-5 h-56">

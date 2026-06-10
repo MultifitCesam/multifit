@@ -23,6 +23,11 @@ export interface DBProfile {
   allergies: string | null;
   dietary_restrictions: string | null;
   onboarded: boolean;
+  gender: "masculino" | "feminino" | "outro" | null;
+  target_weight: number | null;
+  activity_level: "sedentario" | "leve" | "moderado" | "ativo" | "muito_ativo" | null;
+  health_conditions: string | null;
+  focus_areas: string | null;
 }
 
 export function useProfile() {
