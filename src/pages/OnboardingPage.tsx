@@ -47,23 +47,29 @@ export default function OnboardingPage() {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     name: profile?.name || "",
+    gender: (profile?.gender as any) || "feminino",
     age: profile?.age || 25,
     weight: profile?.weight || 70,
     height: profile?.height || 170,
+    target_weight: profile?.target_weight || 65,
     goal: profile?.goal || "hipertrofia",
     level: profile?.level || "iniciante",
     weekly_frequency: profile?.weekly_frequency || 4,
     training_time: profile?.training_time || "manha",
     sleep_hours: profile?.sleep_hours || 7,
     sleep_quality: profile?.sleep_quality || "boa",
+    health_conditions: profile?.health_conditions || "",
+    focus_areas: profile?.focus_areas || "",
   });
 
   const set = (p: Partial<typeof form>) => setForm({ ...form, ...p });
 
   const steps = [
-    { title: "Vamos te conhecer", subtitle: "Comece com o básico", icon: Sparkles },
+    { title: "Quem é você?", subtitle: "Pra personalizar tudo", icon: User2 },
+    { title: "Vamos te conhecer", subtitle: "Idade, peso e altura", icon: Sparkles },
     { title: "Seu objetivo", subtitle: "Para onde vamos?", icon: Target },
     { title: "Sua rotina", subtitle: "Quando e quanto treina?", icon: Dumbbell },
+    { title: "Saúde e foco", subtitle: "Pra treinar com segurança", icon: Heart },
     { title: "Seu descanso", subtitle: "Sono é parte do treino", icon: Moon },
   ];
 
@@ -71,10 +77,11 @@ export default function OnboardingPage() {
   const isLast = step === steps.length - 1;
 
   const next = async () => {
-    if (step === 0 && form.name.trim().length < 2) {
-      toast({ title: "Conta pra gente seu nome", variant: "destructive" }); return;
+    if (step === 0 && (form.name.trim().length < 2 || !form.gender)) {
+      toast({ title: "Preencha nome e gênero", variant: "destructive" }); return;
     }
     if (!isLast) { setStep(step + 1); return; }
+
     setSaving(true);
     await updateProfile({ ...form, onboarded: true } as any);
     setSaving(false);
