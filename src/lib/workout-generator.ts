@@ -1,5 +1,6 @@
 export interface UserProfile {
   name: string;
+  gender?: "masculino" | "feminino" | "outro" | null;
   age: number;
   weight: number;
   height: number;
@@ -10,7 +11,10 @@ export interface UserProfile {
   sleepQuality: "ruim" | "regular" | "boa" | "excelente";
   weeklyFrequency: number;
   trainingTime: "manha" | "tarde" | "noite";
+  focusAreas?: string | null;
+  healthConditions?: string | null;
 }
+
 
 export interface Exercise {
   name: string;
@@ -117,21 +121,53 @@ const warmups: Record<string, string> = {
   peito: "5 min esteira + rotação de ombros + 15 flexões leves",
   costas: "5 min remada ergométrica + mobilidade de ombros",
   pernas: "5 min bicicleta + agachamento sem peso 2x15",
+  gluteos: "5 min bicicleta + ativação de glúteo com mini band 2x15",
   ombros: "5 min elíptico + rotação de ombros com elástico",
   bracos: "5 min esteira + rosca leve 2x15",
   cardio: "3 min caminhada leve + alongamento dinâmico",
   funcional: "5 min pular corda + mobilidade articular completa",
 };
 
-export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
-  const { level, goal, bodyType, sleepHours, sleepQuality, weeklyFrequency, trainingTime } = profile;
 
-  const splits: Record<number, string[][]> = {
+// Female-focused exercise additions
+const femaleAccessory: Record<string, Exercise[]> = {
+  gluteos: [
+    { name: "Hip Thrust", sets: 4, reps: "10-12", rest: "90s", description: "Apoie os ombros no banco e empurre o quadril com barra/halter.", muscleGroup: "Glúteos" },
+    { name: "Elevação Pélvica", sets: 4, reps: "15", rest: "60s", description: "Deite, joelhos flexionados, eleve o quadril contraindo o glúteo.", muscleGroup: "Glúteos" },
+    { name: "Cadeira Abdutora", sets: 3, reps: "15-20", rest: "45s", description: "Abra as pernas contra a resistência da máquina.", muscleGroup: "Glúteos" },
+    { name: "Coice na Polia", sets: 3, reps: "12 cada", rest: "45s", description: "Cabo no tornozelo, estenda a perna pra trás contraindo o glúteo.", muscleGroup: "Glúteos" },
+    { name: "Búlgaro", sets: 3, reps: "10 cada", rest: "60s", description: "Pé traseiro elevado, agache focando no glúteo da perna da frente.", muscleGroup: "Glúteos" },
+  ],
+  posterior: [
+    { name: "Mesa Flexora", sets: 4, reps: "12-15", rest: "60s", description: "Deitada, flexione as pernas contra a almofada.", muscleGroup: "Posterior" },
+    { name: "Stiff com Halteres", sets: 3, reps: "12", rest: "60s", description: "Desça os halteres mantendo as pernas semi-estendidas.", muscleGroup: "Posterior" },
+  ],
+  core: [
+    { name: "Prancha Abdominal", sets: 3, reps: "40s", rest: "30s", description: "Mantenha o corpo reto apoiada nos antebraços.", muscleGroup: "Core" },
+    { name: "Abdominal Bicicleta", sets: 3, reps: "20 cada", rest: "30s", description: "Alterne joelho-cotovelo opostos no chão.", muscleGroup: "Core" },
+    { name: "Russian Twist", sets: 3, reps: "20", rest: "30s", description: "Sentada, gire o tronco com leve peso.", muscleGroup: "Core" },
+  ],
+};
+
+export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
+  const { gender, level, goal, bodyType, sleepHours, sleepQuality, weeklyFrequency, trainingTime } = profile;
+  const isFemale = gender === "feminino";
+
+  // Female-focused split prioritizes lower body (glutes/legs 2-3x/week)
+  const splitsMale: Record<number, string[][]> = {
     3: [["peito", "ombros"], ["costas", "bracos"], ["pernas"]],
     4: [["peito"], ["costas"], ["pernas"], ["ombros", "bracos"]],
     5: [["peito"], ["costas"], ["pernas"], ["ombros"], ["bracos"]],
     6: [["peito"], ["costas"], ["pernas"], ["ombros"], ["bracos"], ["pernas"]],
   };
+  const splitsFemale: Record<number, string[][]> = {
+    3: [["gluteos"], ["costas", "bracos"], ["pernas"]],
+    4: [["gluteos"], ["costas"], ["pernas"], ["peito", "ombros"]],
+    5: [["gluteos"], ["costas"], ["pernas"], ["gluteos"], ["peito", "bracos"]],
+    6: [["gluteos"], ["costas"], ["pernas"], ["gluteos"], ["peito", "ombros"], ["bracos"]],
+  };
+  const splits = isFemale ? splitsFemale : splitsMale;
+
 
   const freq = Math.max(3, Math.min(6, weeklyFrequency));
   const split = splits[freq];
@@ -142,8 +178,22 @@ export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
   split.forEach((muscles, i) => {
     const exercises: Exercise[] = [];
     muscles.forEach(m => {
-      exercises.push(...getExercises(m, level));
+      if (m === "gluteos") {
+        exercises.push(...femaleAccessory.gluteos.slice(0, level === "iniciante" ? 3 : 4));
+        exercises.push(...femaleAccessory.posterior.slice(0, 1));
+      } else {
+        exercises.push(...getExercises(m, level));
+      }
     });
+
+    // Women: always add a glute or core accessory on leg days for extra focus
+    if (isFemale && muscles.includes("pernas")) {
+      exercises.push(femaleAccessory.gluteos[0]);
+    }
+    // Women: add core finisher 2x per week
+    if (isFemale && (i === 1 || i === 4)) {
+      exercises.push(...femaleAccessory.core.slice(0, 2));
+    }
 
     // Add cardio for emagrecimento
     if (goal === "emagrecimento" && i % 2 === 0) {
@@ -162,6 +212,7 @@ export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
         e.rest = "90s";
       });
     }
+
 
     weeklyPlan.push({
       day: days[i],

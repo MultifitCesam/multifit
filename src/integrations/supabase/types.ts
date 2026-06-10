@@ -339,6 +339,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          activity_level: string | null
           age: number | null
           allergies: string | null
           avatar_url: string | null
@@ -346,7 +347,10 @@ export type Database = {
           body_type: string | null
           created_at: string
           dietary_restrictions: string | null
+          focus_areas: string | null
+          gender: string | null
           goal: string | null
+          health_conditions: string | null
           height: number | null
           id: string
           is_private: boolean
@@ -355,6 +359,7 @@ export type Database = {
           onboarded: boolean
           sleep_hours: number | null
           sleep_quality: string | null
+          target_weight: number | null
           training_time: string | null
           updated_at: string
           user_id: string
@@ -363,6 +368,7 @@ export type Database = {
           weight: number | null
         }
         Insert: {
+          activity_level?: string | null
           age?: number | null
           allergies?: string | null
           avatar_url?: string | null
@@ -370,7 +376,10 @@ export type Database = {
           body_type?: string | null
           created_at?: string
           dietary_restrictions?: string | null
+          focus_areas?: string | null
+          gender?: string | null
           goal?: string | null
+          health_conditions?: string | null
           height?: number | null
           id?: string
           is_private?: boolean
@@ -379,6 +388,7 @@ export type Database = {
           onboarded?: boolean
           sleep_hours?: number | null
           sleep_quality?: string | null
+          target_weight?: number | null
           training_time?: string | null
           updated_at?: string
           user_id: string
@@ -387,6 +397,7 @@ export type Database = {
           weight?: number | null
         }
         Update: {
+          activity_level?: string | null
           age?: number | null
           allergies?: string | null
           avatar_url?: string | null
@@ -394,7 +405,10 @@ export type Database = {
           body_type?: string | null
           created_at?: string
           dietary_restrictions?: string | null
+          focus_areas?: string | null
+          gender?: string | null
           goal?: string | null
+          health_conditions?: string | null
           height?: number | null
           id?: string
           is_private?: boolean
@@ -403,6 +417,7 @@ export type Database = {
           onboarded?: boolean
           sleep_hours?: number | null
           sleep_quality?: string | null
+          target_weight?: number | null
           training_time?: string | null
           updated_at?: string
           user_id?: string

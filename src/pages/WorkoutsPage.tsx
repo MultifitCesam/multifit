@@ -92,6 +92,7 @@ export default function WorkoutsPage() {
     if (!profile) return;
     const mapped: UserProfile = {
       name: profile.name,
+      gender: (profile as any).gender ?? null,
       age: profile.age,
       weight: Number(profile.weight),
       height: Number(profile.height),
@@ -102,7 +103,10 @@ export default function WorkoutsPage() {
       sleepQuality: profile.sleep_quality,
       weeklyFrequency: profile.weekly_frequency,
       trainingTime: profile.training_time,
+      focusAreas: (profile as any).focus_areas ?? null,
+      healthConditions: (profile as any).health_conditions ?? null,
     };
+
     setPlan(generateWorkoutPlan(mapped));
   };
 

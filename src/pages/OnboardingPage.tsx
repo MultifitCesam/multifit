@@ -1,10 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, Check, Loader2, Sparkles, Target, Moon, Dumbbell } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Loader2, Sparkles, Target, Moon, Dumbbell, User2, Heart } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "@/hooks/use-toast";
 import logo from "@/assets/multifit-logo.png";
+
+const genders = [
+  { value: "feminino", label: "Feminino", emoji: "👩" },
+  { value: "masculino", label: "Masculino", emoji: "👨" },
+  { value: "outro", label: "Outro", emoji: "🌈" },
+] as const;
+
 
 const goals = [
   { value: "emagrecimento", label: "Emagrecer", emoji: "⚖️" },
@@ -40,23 +47,29 @@ export default function OnboardingPage() {
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     name: profile?.name || "",
+    gender: (profile?.gender as any) || "feminino",
     age: profile?.age || 25,
     weight: profile?.weight || 70,
     height: profile?.height || 170,
+    target_weight: profile?.target_weight || 65,
     goal: profile?.goal || "hipertrofia",
     level: profile?.level || "iniciante",
     weekly_frequency: profile?.weekly_frequency || 4,
     training_time: profile?.training_time || "manha",
     sleep_hours: profile?.sleep_hours || 7,
     sleep_quality: profile?.sleep_quality || "boa",
+    health_conditions: profile?.health_conditions || "",
+    focus_areas: profile?.focus_areas || "",
   });
 
   const set = (p: Partial<typeof form>) => setForm({ ...form, ...p });
 
   const steps = [
-    { title: "Vamos te conhecer", subtitle: "Comece com o básico", icon: Sparkles },
+    { title: "Quem é você?", subtitle: "Pra personalizar tudo", icon: User2 },
+    { title: "Vamos te conhecer", subtitle: "Idade, peso e altura", icon: Sparkles },
     { title: "Seu objetivo", subtitle: "Para onde vamos?", icon: Target },
     { title: "Sua rotina", subtitle: "Quando e quanto treina?", icon: Dumbbell },
+    { title: "Saúde e foco", subtitle: "Pra treinar com segurança", icon: Heart },
     { title: "Seu descanso", subtitle: "Sono é parte do treino", icon: Moon },
   ];
 
@@ -64,10 +77,11 @@ export default function OnboardingPage() {
   const isLast = step === steps.length - 1;
 
   const next = async () => {
-    if (step === 0 && form.name.trim().length < 2) {
-      toast({ title: "Conta pra gente seu nome", variant: "destructive" }); return;
+    if (step === 0 && (form.name.trim().length < 2 || !form.gender)) {
+      toast({ title: "Preencha nome e gênero", variant: "destructive" }); return;
     }
     if (!isLast) { setStep(step + 1); return; }
+
     setSaving(true);
     await updateProfile({ ...form, onboarded: true } as any);
     setSaving(false);
@@ -134,15 +148,28 @@ export default function OnboardingPage() {
                       className="w-full bg-secondary rounded-xl px-4 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
                     />
                   </Field>
-                  <div className="grid grid-cols-3 gap-3">
-                    <Stepper label="Idade" value={form.age} onChange={(v) => set({ age: v })} min={12} max={99} suffix="a" />
-                    <Stepper label="Peso" value={form.weight} onChange={(v) => set({ weight: v })} min={30} max={250} suffix="kg" />
-                    <Stepper label="Altura" value={form.height} onChange={(v) => set({ height: v })} min={130} max={230} suffix="cm" />
-                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-2 mb-2 font-bold uppercase tracking-wide">Gênero</p>
+                  <Grid cols={3}>
+                    {genders.map((g) => (
+                      <Chip key={g.value} active={form.gender === g.value} onClick={() => set({ gender: g.value as any })}>
+                        <span className="text-2xl">{g.emoji}</span>
+                        <span className="font-bold text-xs">{g.label}</span>
+                      </Chip>
+                    ))}
+                  </Grid>
+                  <p className="text-[10px] text-muted-foreground mt-2">Usamos para gerar treinos e cálculos calóricos sob medida.</p>
                 </>
               )}
 
               {step === 1 && (
+                <div className="grid grid-cols-3 gap-3">
+                  <Stepper label="Idade" value={form.age} onChange={(v) => set({ age: v })} min={12} max={99} suffix="a" />
+                  <Stepper label="Peso" value={form.weight} onChange={(v) => set({ weight: v })} min={30} max={250} suffix="kg" />
+                  <Stepper label="Altura" value={form.height} onChange={(v) => set({ height: v })} min={130} max={230} suffix="cm" />
+                </div>
+              )}
+
+              {step === 2 && (
                 <>
                   <Grid cols={2}>
                     {goals.map((g) => (
@@ -152,6 +179,14 @@ export default function OnboardingPage() {
                       </Chip>
                     ))}
                   </Grid>
+                  <Field label={<>Peso meta: <span className="text-primary font-bold">{form.target_weight}kg</span></>}>
+                    <input
+                      type="range" min={40} max={150} step={0.5}
+                      value={form.target_weight}
+                      onChange={(e) => set({ target_weight: Number(e.target.value) })}
+                      className="w-full accent-primary"
+                    />
+                  </Field>
                   <p className="text-[11px] text-muted-foreground mt-4 mb-2 font-bold uppercase tracking-wide">Seu nível</p>
                   <Grid cols={3}>
                     {levels.map((l) => (
@@ -164,7 +199,7 @@ export default function OnboardingPage() {
                 </>
               )}
 
-              {step === 2 && (
+              {step === 3 && (
                 <>
                   <Field label={<>Treinos por semana: <span className="text-primary font-bold">{form.weekly_frequency}x</span></>}>
                     <input
@@ -187,7 +222,31 @@ export default function OnboardingPage() {
                 </>
               )}
 
-              {step === 3 && (
+              {step === 4 && (
+                <>
+                  <Field label="Áreas que você quer focar (opcional)">
+                    <input
+                      type="text"
+                      value={form.focus_areas}
+                      onChange={(e) => set({ focus_areas: e.target.value.slice(0, 120) })}
+                      placeholder={form.gender === "feminino" ? "Ex: glúteos, posterior, abdômen" : "Ex: peito, braços, ombros"}
+                      className="w-full bg-secondary rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
+                  </Field>
+                  <Field label="Condições de saúde / lesões (opcional)">
+                    <textarea
+                      value={form.health_conditions}
+                      onChange={(e) => set({ health_conditions: e.target.value.slice(0, 280) })}
+                      placeholder="Ex: dor no joelho, hipertensão, asma..."
+                      rows={3}
+                      className="w-full bg-secondary rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                    />
+                  </Field>
+                  <p className="text-[10px] text-muted-foreground">Adaptamos seu treino para evitar riscos.</p>
+                </>
+              )}
+
+              {step === 5 && (
                 <>
                   <Field label={<>Horas de sono: <span className="text-primary font-bold">{form.sleep_hours}h</span></>}>
                     <input
@@ -209,6 +268,7 @@ export default function OnboardingPage() {
                   </Grid>
                 </>
               )}
+
             </div>
           </motion.div>
         </AnimatePresence>

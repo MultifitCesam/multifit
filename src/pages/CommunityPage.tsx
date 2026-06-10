@@ -437,9 +437,18 @@ export default function CommunityPage() {
 
               <div className="flex items-center gap-5 px-4 py-3">
                 <ActionBtn onClick={() => toggleLike(post)} active={post.liked} activeClass="text-neon-pink">
-                  <Heart size={18} className={post.liked ? "fill-neon-pink" : ""} />
+                  <motion.span
+                    key={String(post.liked)}
+                    initial={{ scale: 1 }}
+                    animate={post.liked ? { scale: [1, 1.4, 0.9, 1.15, 1] } : { scale: 1 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="inline-flex"
+                  >
+                    <Heart size={18} className={post.liked ? "fill-neon-pink text-neon-pink" : ""} />
+                  </motion.span>
                   <span className="text-xs">{post.likes_count}</span>
                 </ActionBtn>
+
                 <ActionBtn onClick={() => openComments(post.id)}>
                   <MessageCircle size={18} />
                   <span className="text-xs">{post.comments_count}</span>
