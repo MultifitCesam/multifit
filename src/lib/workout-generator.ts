@@ -176,8 +176,22 @@ export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
   split.forEach((muscles, i) => {
     const exercises: Exercise[] = [];
     muscles.forEach(m => {
-      exercises.push(...getExercises(m, level));
+      if (m === "gluteos") {
+        exercises.push(...femaleAccessory.gluteos.slice(0, level === "iniciante" ? 3 : 4));
+        exercises.push(...femaleAccessory.posterior.slice(0, 1));
+      } else {
+        exercises.push(...getExercises(m, level));
+      }
     });
+
+    // Women: always add a glute or core accessory on leg days for extra focus
+    if (isFemale && muscles.includes("pernas")) {
+      exercises.push(femaleAccessory.gluteos[0]);
+    }
+    // Women: add core finisher 2x per week
+    if (isFemale && (i === 1 || i === 4)) {
+      exercises.push(...femaleAccessory.core.slice(0, 2));
+    }
 
     // Add cardio for emagrecimento
     if (goal === "emagrecimento" && i % 2 === 0) {
@@ -196,6 +210,7 @@ export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
         e.rest = "90s";
       });
     }
+
 
     weeklyPlan.push({
       day: days[i],
