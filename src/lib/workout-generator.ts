@@ -121,11 +121,13 @@ const warmups: Record<string, string> = {
   peito: "5 min esteira + rotação de ombros + 15 flexões leves",
   costas: "5 min remada ergométrica + mobilidade de ombros",
   pernas: "5 min bicicleta + agachamento sem peso 2x15",
+  gluteos: "5 min bicicleta + ativação de glúteo com mini band 2x15",
   ombros: "5 min elíptico + rotação de ombros com elástico",
   bracos: "5 min esteira + rosca leve 2x15",
   cardio: "3 min caminhada leve + alongamento dinâmico",
   funcional: "5 min pular corda + mobilidade articular completa",
 };
+
 
 // Female-focused exercise additions
 const femaleAccessory: Record<string, Exercise[]> = {
