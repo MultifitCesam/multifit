@@ -1,10 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, Check, Loader2, Sparkles, Target, Moon, Dumbbell } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Loader2, Sparkles, Target, Moon, Dumbbell, User2, Heart } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "@/hooks/use-toast";
 import logo from "@/assets/multifit-logo.png";
+
+const genders = [
+  { value: "feminino", label: "Feminino", emoji: "👩" },
+  { value: "masculino", label: "Masculino", emoji: "👨" },
+  { value: "outro", label: "Outro", emoji: "🌈" },
+] as const;
+
 
 const goals = [
   { value: "emagrecimento", label: "Emagrecer", emoji: "⚖️" },
