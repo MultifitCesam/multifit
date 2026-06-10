@@ -127,15 +127,45 @@ const warmups: Record<string, string> = {
   funcional: "5 min pular corda + mobilidade articular completa",
 };
 
-export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
-  const { level, goal, bodyType, sleepHours, sleepQuality, weeklyFrequency, trainingTime } = profile;
+// Female-focused exercise additions
+const femaleAccessory: Record<string, Exercise[]> = {
+  gluteos: [
+    { name: "Hip Thrust", sets: 4, reps: "10-12", rest: "90s", description: "Apoie os ombros no banco e empurre o quadril com barra/halter.", muscleGroup: "Glúteos" },
+    { name: "Elevação Pélvica", sets: 4, reps: "15", rest: "60s", description: "Deite, joelhos flexionados, eleve o quadril contraindo o glúteo.", muscleGroup: "Glúteos" },
+    { name: "Cadeira Abdutora", sets: 3, reps: "15-20", rest: "45s", description: "Abra as pernas contra a resistência da máquina.", muscleGroup: "Glúteos" },
+    { name: "Coice na Polia", sets: 3, reps: "12 cada", rest: "45s", description: "Cabo no tornozelo, estenda a perna pra trás contraindo o glúteo.", muscleGroup: "Glúteos" },
+    { name: "Búlgaro", sets: 3, reps: "10 cada", rest: "60s", description: "Pé traseiro elevado, agache focando no glúteo da perna da frente.", muscleGroup: "Glúteos" },
+  ],
+  posterior: [
+    { name: "Mesa Flexora", sets: 4, reps: "12-15", rest: "60s", description: "Deitada, flexione as pernas contra a almofada.", muscleGroup: "Posterior" },
+    { name: "Stiff com Halteres", sets: 3, reps: "12", rest: "60s", description: "Desça os halteres mantendo as pernas semi-estendidas.", muscleGroup: "Posterior" },
+  ],
+  core: [
+    { name: "Prancha Abdominal", sets: 3, reps: "40s", rest: "30s", description: "Mantenha o corpo reto apoiada nos antebraços.", muscleGroup: "Core" },
+    { name: "Abdominal Bicicleta", sets: 3, reps: "20 cada", rest: "30s", description: "Alterne joelho-cotovelo opostos no chão.", muscleGroup: "Core" },
+    { name: "Russian Twist", sets: 3, reps: "20", rest: "30s", description: "Sentada, gire o tronco com leve peso.", muscleGroup: "Core" },
+  ],
+};
 
-  const splits: Record<number, string[][]> = {
+export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
+  const { gender, level, goal, bodyType, sleepHours, sleepQuality, weeklyFrequency, trainingTime } = profile;
+  const isFemale = gender === "feminino";
+
+  // Female-focused split prioritizes lower body (glutes/legs 2-3x/week)
+  const splitsMale: Record<number, string[][]> = {
     3: [["peito", "ombros"], ["costas", "bracos"], ["pernas"]],
     4: [["peito"], ["costas"], ["pernas"], ["ombros", "bracos"]],
     5: [["peito"], ["costas"], ["pernas"], ["ombros"], ["bracos"]],
     6: [["peito"], ["costas"], ["pernas"], ["ombros"], ["bracos"], ["pernas"]],
   };
+  const splitsFemale: Record<number, string[][]> = {
+    3: [["gluteos"], ["costas", "bracos"], ["pernas"]],
+    4: [["gluteos"], ["costas"], ["pernas"], ["peito", "ombros"]],
+    5: [["gluteos"], ["costas"], ["pernas"], ["gluteos"], ["peito", "bracos"]],
+    6: [["gluteos"], ["costas"], ["pernas"], ["gluteos"], ["peito", "ombros"], ["bracos"]],
+  };
+  const splits = isFemale ? splitsFemale : splitsMale;
+
 
   const freq = Math.max(3, Math.min(6, weeklyFrequency));
   const split = splits[freq];
