@@ -1,9 +1,15 @@
 // Streaming fitness chatbot via Lovable AI Gateway
+import { createClient } from "npm:@supabase/supabase-js@2";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
+
+const MAX_MESSAGES = 50;
+const MAX_CONTENT_LEN = 2000;
+const ALLOWED_ROLES = new Set(["user", "assistant"]);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -11,7 +17,74 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // --- AuthN: require a valid Supabase user JWT ---
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } },
+    );
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsErr } = await supabase.auth.getClaims(token);
+    if (claimsErr || !claimsData?.claims?.sub) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { messages, profile } = await req.json();
+
+    // --- Input validation ---
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return new Response(JSON.stringify({ error: "messages must be a non-empty array" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (messages.length > MAX_MESSAGES) {
+      return new Response(JSON.stringify({ error: `Too many messages (max ${MAX_MESSAGES})` }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const sanitized: { role: string; content: string }[] = [];
+    for (const m of messages) {
+      if (!m || typeof m !== "object") {
+        return new Response(JSON.stringify({ error: "Invalid message shape" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const role = String((m as any).role ?? "");
+      const content = (m as any).content;
+      if (!ALLOWED_ROLES.has(role)) {
+        return new Response(JSON.stringify({ error: "Invalid role" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (typeof content !== "string" || content.length === 0) {
+        return new Response(JSON.stringify({ error: "Message content must be a non-empty string" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (content.length > MAX_CONTENT_LEN) {
+        return new Response(JSON.stringify({ error: `Message too long (max ${MAX_CONTENT_LEN} chars)` }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      sanitized.push({ role, content });
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
@@ -43,7 +116,7 @@ Diretrizes:
           model: "google/gemini-2.5-flash",
           messages: [
             { role: "system", content: systemPrompt },
-            ...messages,
+            ...sanitized,
           ],
           stream: true,
         }),
