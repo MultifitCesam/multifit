@@ -41,7 +41,7 @@ export default function UserProfilePage() {
         .maybeSingle();
       if (cancel) return;
       if (!data) { setLoading(false); return; }
-      setProfile(data as DBProfile);
+      setProfile(data as unknown as DBProfile);
       const canViewPosts = !data.is_private || (user && data.user_id === user.id);
       if (canViewPosts) {
         const { data: ps } = await supabase
