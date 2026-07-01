@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { SafeImg, SafeVideo } from "@/components/SafeMedia";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, MessageCircle, Send, Plus, ImagePlus, Repeat2, Share2, X, Loader2, Trash2, Flag, MoreHorizontal } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
@@ -422,10 +423,10 @@ export default function CommunityPage() {
               </header>
 
               {display.media_url && display.media_type === "image" && (
-                <img src={display.media_url} alt="" className="w-full max-h-[520px] object-cover bg-secondary" loading="lazy" />
+                <SafeImg src={display.media_url} alt="" className="w-full max-h-[520px] object-cover bg-secondary" loading="lazy" />
               )}
               {display.media_url && display.media_type === "video" && (
-                <video src={display.media_url} controls playsInline className="w-full max-h-[520px] bg-black" />
+                <SafeVideo src={display.media_url} controls playsInline className="w-full max-h-[520px] bg-black" />
               )}
 
               {display.caption && (

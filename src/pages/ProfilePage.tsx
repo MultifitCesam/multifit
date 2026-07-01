@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { SafeImg, SafeVideo } from "@/components/SafeMedia";
 import { motion } from "framer-motion";
 import { User, Save, Loader2, Camera, LogOut, Apple, Settings, Lock, Globe, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -205,7 +206,7 @@ export default function ProfilePage() {
           <div className="w-28 h-28 rounded-full bg-gradient-primary p-[3px] shadow-neon">
             <div className="w-full h-full rounded-full bg-background flex items-center justify-center overflow-hidden">
               {local.avatar_url ? (
-                <img src={local.avatar_url} alt="" className="w-full h-full object-cover" />
+                <SafeImg src={local.avatar_url} alt="" className="w-full h-full object-cover" />
               ) : (
                 <User size={42} className="text-primary" />
               )}

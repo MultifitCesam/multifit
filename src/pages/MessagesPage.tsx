@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SafeImg, SafeVideo } from "@/components/SafeMedia";
 import { useNavigate } from "react-router-dom";
 import { Loader2, MessageCircle, Search } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
@@ -99,7 +100,7 @@ export default function MessagesPage() {
               <div className="relative shrink-0">
                 <div className="w-12 h-12 rounded-full bg-gradient-primary p-[2px]">
                   <div className="w-full h-full rounded-full bg-background overflow-hidden flex items-center justify-center">
-                    {c.other?.avatar_url ? <img src={c.other.avatar_url} className="w-full h-full object-cover" /> : <span className="text-sm font-bold text-primary">{c.other?.name?.[0]?.toUpperCase()}</span>}
+                    {c.other?.avatar_url ? <SafeImg src={c.other.avatar_url} className="w-full h-full object-cover" /> : <span className="text-sm font-bold text-primary">{c.other?.name?.[0]?.toUpperCase()}</span>}
                   </div>
                 </div>
                 {(c.unread ?? 0) > 0 && (

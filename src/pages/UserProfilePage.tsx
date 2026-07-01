@@ -100,7 +100,7 @@ export default function UserProfilePage() {
       <div className="px-4 flex items-center gap-5 mb-4">
         <div className="w-20 h-20 rounded-full bg-gradient-primary p-[3px] shadow-neon shrink-0">
           <div className="w-full h-full rounded-full bg-background overflow-hidden flex items-center justify-center">
-            {profile.avatar_url ? <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" /> : <span className="text-2xl font-bold text-primary">{profile.name?.[0]?.toUpperCase()}</span>}
+            {profile.avatar_url ? <SafeImg src={profile.avatar_url} alt="" className="w-full h-full object-cover" /> : <span className="text-2xl font-bold text-primary">{profile.name?.[0]?.toUpperCase()}</span>}
           </div>
         </div>
         <div className="flex-1 grid grid-cols-3 gap-1 text-center">
@@ -173,10 +173,10 @@ export default function UserProfilePage() {
                   className="aspect-square bg-secondary relative overflow-hidden"
                 >
                   {p.media_url && p.media_type === "image" && (
-                    <img src={p.media_url} alt="" className="w-full h-full object-cover" loading="lazy" />
+                    <SafeImg src={p.media_url} alt="" className="w-full h-full object-cover" loading="lazy" />
                   )}
                   {p.media_url && p.media_type === "video" && (
-                    <video src={p.media_url} className="w-full h-full object-cover" muted />
+                    <SafeVideo src={p.media_url} className="w-full h-full object-cover" muted />
                   )}
                   {!p.media_url && (
                     <div className="w-full h-full flex items-center justify-center p-2 text-[10px] text-muted-foreground line-clamp-4">{p.caption}</div>

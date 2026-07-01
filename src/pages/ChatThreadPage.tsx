@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { SafeImg, SafeVideo } from "@/components/SafeMedia";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, Send, Loader2, Check, CheckCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -90,7 +91,7 @@ export default function ChatThreadPage() {
           <button onClick={() => navigate(`/u/${other.username}`)} className="flex items-center gap-2 flex-1 text-left">
             <div className="w-9 h-9 rounded-full bg-gradient-primary p-[2px]">
               <div className="w-full h-full rounded-full bg-background overflow-hidden flex items-center justify-center">
-                {other.avatar_url ? <img src={other.avatar_url} className="w-full h-full object-cover" /> : <span className="text-xs font-bold text-primary">{other.name?.[0]?.toUpperCase()}</span>}
+                {other.avatar_url ? <SafeImg src={other.avatar_url} className="w-full h-full object-cover" /> : <span className="text-xs font-bold text-primary">{other.name?.[0]?.toUpperCase()}</span>}
               </div>
             </div>
             <div className="min-w-0">

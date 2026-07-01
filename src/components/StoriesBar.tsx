@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { SafeImg, SafeVideo } from "@/components/SafeMedia";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, X, ImagePlus, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,7 +99,7 @@ export default function StoriesBar() {
             <div className={`relative w-16 h-16 rounded-full p-[2px] ${myGroup ? "bg-gradient-primary" : "bg-secondary"}`}>
               <div className="w-full h-full rounded-full bg-background flex items-center justify-center overflow-hidden">
                 {myGroup?.author.avatar_url ? (
-                  <img src={myGroup.author.avatar_url} alt="" className="w-full h-full object-cover" />
+                  <SafeImg src={myGroup.author.avatar_url} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <Plus size={20} className="text-primary" />
                 )}
@@ -121,7 +122,7 @@ export default function StoriesBar() {
                 <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-primary">
                   <div className="w-full h-full rounded-full bg-background overflow-hidden flex items-center justify-center">
                     {g.author.avatar_url ? (
-                      <img src={g.author.avatar_url} alt="" className="w-full h-full object-cover" />
+                      <SafeImg src={g.author.avatar_url} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-xs font-bold">{(g.author.name || "A")[0]}</span>
                     )}
@@ -255,7 +256,7 @@ function StoryViewer({
         <div className="flex items-center justify-between px-3 pb-2">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-white/10 overflow-hidden">
-              {group.author.avatar_url && <img src={group.author.avatar_url} alt="" className="w-full h-full object-cover" />}
+              {group.author.avatar_url && <SafeImg src={group.author.avatar_url} alt="" className="w-full h-full object-cover" />}
             </div>
             <div>
               <div className="text-sm font-bold text-white">{group.author.username ?? group.author.name}</div>
@@ -274,9 +275,9 @@ function StoryViewer({
 
         <div className="flex-1 relative flex items-center justify-center">
           {story.media_type === "video" ? (
-            <video src={story.media_url} autoPlay playsInline className="max-h-full max-w-full" />
+            <SafeVideo src={story.media_url} autoPlay playsInline className="max-h-full max-w-full" />
           ) : (
-            <img src={story.media_url} alt="" className="max-h-full max-w-full object-contain" />
+            <SafeImg src={story.media_url} alt="" className="max-h-full max-w-full object-contain" />
           )}
           {story.caption && (
             <div className="absolute bottom-6 left-4 right-4 bg-black/50 rounded-xl p-3 text-white text-sm text-center">{story.caption}</div>
