@@ -36,12 +36,12 @@ export default function UserProfilePage() {
     (async () => {
       setLoading(true);
       const { data } = await supabase
-        .from("profiles").select("*")
+        .from("profiles").select("user_id, username, name, avatar_url, bio, is_private, level, goal, onboarded, created_at, updated_at")
         .ilike("username", username || "")
         .maybeSingle();
       if (cancel) return;
       if (!data) { setLoading(false); return; }
-      setProfile(data as DBProfile);
+      setProfile(data as unknown as DBProfile);
       const canViewPosts = !data.is_private || (user && data.user_id === user.id);
       if (canViewPosts) {
         const { data: ps } = await supabase

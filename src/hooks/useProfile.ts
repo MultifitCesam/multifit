@@ -42,12 +42,8 @@ export function useProfile() {
       return;
     }
     setLoading(true);
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", user.id)
-      .maybeSingle();
-    if (!error && data) setProfile(data as DBProfile);
+    const { data, error } = await (supabase.rpc as any)("get_own_profile");
+    if (!error && data && data.length > 0) setProfile(data[0] as DBProfile);
     setLoading(false);
   }, [user]);
 

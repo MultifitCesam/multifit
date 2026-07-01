@@ -565,6 +565,44 @@ export type Database = {
         Args: { _other_user: string }
         Returns: string
       }
+      get_own_profile: {
+        Args: never
+        Returns: {
+          activity_level: string | null
+          age: number | null
+          allergies: string | null
+          avatar_url: string | null
+          bio: string | null
+          body_type: string | null
+          created_at: string
+          dietary_restrictions: string | null
+          focus_areas: string | null
+          gender: string | null
+          goal: string | null
+          health_conditions: string | null
+          height: number | null
+          id: string
+          is_private: boolean
+          level: string | null
+          name: string
+          onboarded: boolean
+          sleep_hours: number | null
+          sleep_quality: string | null
+          target_weight: number | null
+          training_time: string | null
+          updated_at: string
+          user_id: string
+          username: string
+          weekly_frequency: number | null
+          weight: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       is_conversation_participant: {
         Args: { _conv: string; _user: string }
         Returns: boolean
