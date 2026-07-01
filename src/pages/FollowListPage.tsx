@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SafeImg, SafeVideo } from "@/components/SafeMedia";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,7 +44,7 @@ export default function FollowListPage({ mode }: { mode: "followers" | "followin
             <button key={u.user_id} onClick={() => navigate(`/u/${u.username}`)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-secondary/60 transition text-left">
               <div className="w-11 h-11 rounded-full bg-gradient-primary p-[2px] shrink-0">
                 <div className="w-full h-full rounded-full bg-background overflow-hidden flex items-center justify-center">
-                  {u.avatar_url ? <img src={u.avatar_url} className="w-full h-full object-cover" /> : <span className="text-sm font-bold text-primary">{u.name?.[0]?.toUpperCase()}</span>}
+                  {u.avatar_url ? <SafeImg src={u.avatar_url} className="w-full h-full object-cover" /> : <span className="text-sm font-bold text-primary">{u.name?.[0]?.toUpperCase()}</span>}
                 </div>
               </div>
               <div className="flex-1 min-w-0">

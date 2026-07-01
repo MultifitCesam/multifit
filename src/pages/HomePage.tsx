@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SafeImg, SafeVideo } from "@/components/SafeMedia";
 import { motion } from "framer-motion";
 import { Dumbbell, Flame, Footprints, Timer, TrendingUp, Zap, Moon, Bot, Apple, User, Bell, Droplet } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
@@ -83,7 +84,7 @@ export default function HomePage() {
           >
             <div className="w-full h-full rounded-full bg-background flex items-center justify-center overflow-hidden">
               {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                <SafeImg src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
               ) : (
                 <User size={16} className="text-primary" />
               )}

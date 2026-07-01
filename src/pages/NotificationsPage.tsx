@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SafeImg, SafeVideo } from "@/components/SafeMedia";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Heart, MessageCircle, UserPlus, MessageSquare, Loader2, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,7 +99,7 @@ export default function NotificationsPage() {
                   <div className="relative shrink-0">
                     <div className="w-10 h-10 rounded-full bg-gradient-primary p-[2px]">
                       <div className="w-full h-full rounded-full bg-background overflow-hidden flex items-center justify-center">
-                        {n.actor?.avatar_url ? <img src={n.actor.avatar_url} className="w-full h-full object-cover" /> : <span className="text-xs font-bold text-primary">{n.actor?.name?.[0]?.toUpperCase() ?? "?"}</span>}
+                        {n.actor?.avatar_url ? <SafeImg src={n.actor.avatar_url} className="w-full h-full object-cover" /> : <span className="text-xs font-bold text-primary">{n.actor?.name?.[0]?.toUpperCase() ?? "?"}</span>}
                       </div>
                     </div>
                     <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-background flex items-center justify-center">
