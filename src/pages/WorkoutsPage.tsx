@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, Dumbbell, Play, Clock, Zap, RefreshCw } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
+import ExerciseVideo from "@/components/ExerciseVideo";
 import { useProfile } from "@/hooks/useProfile";
 import { generateWorkoutPlan, type WorkoutPlan, type WorkoutDay, type UserProfile } from "@/lib/workout-generator";
 
-function WorkoutDayCard({ day, index }: { day: WorkoutDay; index: number }) {
+function WorkoutDayCard({ day, index, onStart }: { day: WorkoutDay; index: number; onStart: () => void }) {
   const [open, setOpen] = useState(false);
 
   if (day.type === "descanso") {
@@ -64,9 +66,10 @@ function WorkoutDayCard({ day, index }: { day: WorkoutDay; index: number }) {
               )}
               {day.exercises.map((ex, i) => (
                 <div key={i} className="bg-secondary/50 rounded-xl p-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-sm font-bold">{ex.name}</p>
+                  <div className="flex items-center justify-between mb-1 gap-2">
+                    <p className="text-sm font-bold flex-1">{ex.name}</p>
                     <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">{ex.muscleGroup}</span>
+                    <ExerciseVideo exerciseName={ex.name} />
                   </div>
                   <p className="text-xs text-muted-foreground mb-2">{ex.description}</p>
                   <div className="flex gap-4 text-xs text-muted-foreground">
@@ -75,6 +78,12 @@ function WorkoutDayCard({ day, index }: { day: WorkoutDay; index: number }) {
                   </div>
                 </div>
               ))}
+              <button
+                onClick={(e) => { e.stopPropagation(); onStart(); }}
+                className="w-full mt-2 bg-gradient-primary text-primary-foreground font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+              >
+                <Play size={16} /> Executar treino
+              </button>
             </div>
           </motion.div>
         )}
@@ -84,6 +93,7 @@ function WorkoutDayCard({ day, index }: { day: WorkoutDay; index: number }) {
 }
 
 export default function WorkoutsPage() {
+  const nav = useNavigate();
   const { profile } = useProfile();
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const isProfileComplete = !!profile?.name;
@@ -150,7 +160,7 @@ export default function WorkoutsPage() {
 
           {/* Days */}
           {plan.weeklyPlan.map((day, i) => (
-            <WorkoutDayCard key={day.day} day={day} index={i} />
+            <WorkoutDayCard key={day.day} day={day} index={i} onStart={() => nav(`/workouts/session?day=${i}`)} />
           ))}
 
           {/* Tips */}
