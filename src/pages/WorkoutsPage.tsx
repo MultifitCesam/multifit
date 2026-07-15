@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, Dumbbell, Play, Clock, Zap, RefreshCw } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
+import ExerciseVideo from "@/components/ExerciseVideo";
 import { useProfile } from "@/hooks/useProfile";
 import { generateWorkoutPlan, type WorkoutPlan, type WorkoutDay, type UserProfile } from "@/lib/workout-generator";
 
-function WorkoutDayCard({ day, index }: { day: WorkoutDay; index: number }) {
+function WorkoutDayCard({ day, index, onStart }: { day: WorkoutDay; index: number; onStart: () => void }) {
   const [open, setOpen] = useState(false);
 
   if (day.type === "descanso") {

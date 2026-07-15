@@ -20,6 +20,7 @@ import ChatThreadPage from "./pages/ChatThreadPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import NotFound from "./pages/NotFound";
 import OnboardingPage from "./pages/OnboardingPage";
+import WorkoutSessionPage from "./pages/WorkoutSessionPage";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
             <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
             <Route path="/workouts" element={<ProtectedRoute><WorkoutsPage /></ProtectedRoute>} />
+            <Route path="/workouts/session" element={<ProtectedRoute><WorkoutSessionPage /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/community" element={<ProtectedRoute><CommunityPage /></ProtectedRoute>} />
