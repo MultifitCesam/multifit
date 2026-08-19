@@ -20,13 +20,16 @@ const quotes = [
   "Seu único limite é você mesmo.",
 ];
 
+import { HomePageSkeleton } from "@/components/PremiumSkeletons";
+
 export default function HomePage() {
-  const { profile, loading } = useProfile();
-  const { stats, update } = useDailyStats();
+  const { profile, loading: profileLoading } = useProfile();
+  const { stats, update, loading: statsLoading } = useDailyStats();
   const { user } = useAuth();
   const navigate = useNavigate();
   const quote = quotes[Math.floor(Math.random() * quotes.length)];
   const [unread, setUnread] = useState(0);
+  const loading = profileLoading || statsLoading;
 
   // First-time users: send to onboarding wizard
   useEffect(() => {
