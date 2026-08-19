@@ -200,10 +200,18 @@
 
 /* PWA Safe Area Support */
 .safe-area-inset {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: max(env(safe-area-inset-top), 20px);
+  padding-bottom: max(env(safe-area-inset-bottom), 20px);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+}
+
+.premium-card-hover {
+  @apply transition-all duration-300;
+}
+.premium-card-hover:hover {
+  transform: translateY(-4px) scale(1.01);
+  @apply border-primary/40 shadow-neon;
 }
 
 /* Touch feedback for buttons */
