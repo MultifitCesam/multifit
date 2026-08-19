@@ -139,19 +139,20 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col pb-24 max-w-lg mx-auto">
-      <header className="px-4 pt-6 pb-3 flex items-center justify-between">
+    <div className="min-h-screen flex flex-col pb-24 max-w-lg mx-auto bg-background">
+      <header className="px-5 pt-8 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center shadow-neon">
-            <Bot size={20} className="text-primary-foreground" />
+          <div className="w-10 h-10 rounded-xl bg-[hsl(var(--bg-success))] flex items-center justify-center">
+            <Bot size={20} className="text-primary" />
           </div>
           <div>
-            <h1 className="font-bold font-display">MultiFit Coach</h1>
-            <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--neon-green))]" /> Online • IA
+            <h1 className="text-base font-medium text-foreground">MultiFit Coach</h1>
+            <p className="text-[12px] text-muted-foreground font-medium flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary" /> online • ia
             </p>
           </div>
         </div>
+
         {messages.length > 0 && (
           <button onClick={clearChat} className="p-2 text-muted-foreground hover:text-destructive transition-colors">
             <Trash2 size={16} />
@@ -162,29 +163,29 @@ export default function ChatPage() {
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 space-y-3 pb-4">
         {messages.length === 0 && (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }} 
-            animate={{ opacity: 1, scale: 1 }} 
-            className="glass-premium rounded-3xl p-8 mt-4 relative overflow-hidden"
+            initial={{ opacity: 0, y: 10 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            className="bg-secondary border border-border/50 rounded-[20px] p-8 mt-4"
           >
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
-            <Sparkles size={28} className="text-primary mb-4" />
-            <h2 className="text-lg font-black font-display tracking-tight mb-2">Seu Coach Pessoal</h2>
-            <p className="text-sm text-foreground/80 mb-6 leading-relaxed">
+            <Sparkles size={24} className="text-primary mb-4" />
+            <h2 className="text-base font-medium text-foreground mb-2">Seu coach pessoal</h2>
+            <p className="text-[13px] text-muted-foreground mb-8 leading-relaxed">
               Tire dúvidas sobre treino, nutrição e recuperação. Suas respostas usam seu perfil para serem totalmente personalizadas.
             </p>
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               {suggestions.map(s => (
                 <button
                   key={s}
                   onClick={() => send(s)}
-                  className="w-full text-left text-xs bg-secondary/50 hover:bg-secondary border border-white/5 hover:border-primary/30 px-4 py-3 rounded-2xl transition-all duration-300 group"
+                  className="w-full text-left text-[12px] bg-background border border-border/50 px-4 py-3.5 rounded-[14px] text-muted-foreground hover:text-foreground transition-all active:scale-[0.98]"
                 >
-                  <span className="group-hover:text-primary transition-colors">{s}</span>
+                  {s}
                 </button>
               ))}
             </div>
           </motion.div>
         )}
+
 
         {messages.map((m, i) => (
           <motion.div
@@ -194,12 +195,13 @@ export default function ChatPage() {
             className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
+              className={`max-w-[85%] rounded-[18px] px-4 py-3 text-[13px] leading-relaxed ${
                 m.role === "user"
-                  ? "bg-gradient-primary text-primary-foreground rounded-br-sm"
-                  : "glass rounded-bl-sm"
+                  ? "bg-primary text-primary-foreground rounded-tr-[4px]"
+                  : "bg-secondary border border-border/50 text-foreground rounded-tl-[4px]"
               }`}
             >
+
               {m.role === "assistant" ? (
                 <div className="prose prose-sm prose-invert max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-strong:text-primary">
                   <ReactMarkdown>{m.content}</ReactMarkdown>
@@ -223,25 +225,26 @@ export default function ChatPage() {
 
       <form
         onSubmit={e => { e.preventDefault(); send(input); }}
-        className="fixed bottom-[68px] left-0 right-0 z-40 px-4 py-2 bg-background/95 backdrop-blur-xl border-t border-border/50"
+        className="fixed bottom-[68px] left-0 right-0 z-40 px-5 py-3 bg-background border-t border-border/50"
       >
-        <div className="max-w-lg mx-auto flex gap-2">
+        <div className="max-w-lg mx-auto flex gap-3">
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
             placeholder="Pergunte ao seu coach..."
             disabled={loading}
-            className="flex-1 bg-secondary rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-60"
+            className="flex-1 bg-secondary border border-border/50 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 disabled:opacity-60"
           />
           <button
             type="submit"
             disabled={!input.trim() || loading}
-            className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center disabled:opacity-50 shadow-neon"
+            className="w-12 h-12 bg-primary text-primary-foreground rounded-xl flex items-center justify-center disabled:opacity-50 active:scale-95 transition-all"
           >
-            {loading ? <Loader2 size={18} className="animate-spin text-primary-foreground" /> : <Send size={18} className="text-primary-foreground" />}
+            {loading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
           </button>
         </div>
       </form>
+
 
       <BottomNav />
     </div>
