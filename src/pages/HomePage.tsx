@@ -54,49 +54,48 @@ export default function HomePage() {
   if (loading) return <HomePageSkeleton />;
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6 max-w-lg mx-auto">
+    <div className="min-h-screen pb-24 px-5 pt-8 max-w-lg mx-auto bg-background">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-6"
+        className="flex items-center justify-between mb-8"
       >
         <div className="flex items-center gap-3">
-          <img src={logo} alt="MultiFit" className="w-12 h-12 object-contain" />
+          <div className="w-10 h-10 rounded-xl bg-[hsl(var(--bg-success))] flex items-center justify-center">
+            <Flame size={20} className="text-primary" />
+          </div>
           <div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Olá,</p>
-            <h1 className="text-2xl font-black font-display tracking-tight leading-tight">
-              {isProfileComplete ? profile!.name.split(" ")[0] : "Atleta"}{" "}
-              <span className="premium-gradient-text">MultiFit</span>
+            <p className="text-[12px] text-muted-foreground font-medium">Olá,</p>
+            <h1 className="text-base font-medium text-foreground leading-tight">
+              {isProfileComplete ? profile!.name.split(" ")[0] : "Atleta"}
             </h1>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => navigate("/notifications")}
-            className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+            className="w-9 h-9 rounded-full bg-secondary border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             title="Notificações"
           >
             <Bell size={16} />
             {unread > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">{unread > 9 ? "9+" : unread}</span>
+              <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-primary" />
             )}
           </button>
-          <StreakBadge days={7} />
           <button
             onClick={() => navigate("/profile")}
-            className="w-10 h-10 rounded-full bg-gradient-primary p-[2px] shadow-neon"
+            className="w-9 h-9 rounded-full bg-[hsl(var(--bg-success))] flex items-center justify-center overflow-hidden"
             title="Meu perfil"
           >
-            <div className="w-full h-full rounded-full bg-background flex items-center justify-center overflow-hidden">
-              {profile?.avatar_url ? (
-                <SafeImg src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <User size={16} className="text-primary" />
-              )}
-            </div>
+            {profile?.avatar_url ? (
+              <SafeImg src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <User size={16} className="text-primary" />
+            )}
           </button>
         </div>
       </motion.div>
+
 
       <motion.div
         initial={{ opacity: 0 }}
@@ -175,7 +174,7 @@ export default function HomePage() {
       </div>
 
 
-      <h2 className="text-lg font-bold font-display mb-3">Acesso Rápido</h2>
+      <h2 className="text-base font-medium text-foreground mb-4">Acesso rápido</h2>
       <div className="grid grid-cols-2 gap-4 mb-8 stagger-load">
         {[
           { icon: Dumbbell, label: "Meu Treino", path: "/workouts", color: "primary", delay: "stagger-1" },
