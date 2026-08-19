@@ -347,8 +347,15 @@ export default function CommunityPage() {
       )}
 
       {!loading && posts.length === 0 && (
-        <div className="glass rounded-2xl p-8 text-center text-sm text-muted-foreground">
-          Ainda não há posts. Seja o primeiro a compartilhar! 💪
+        <div className="glass-premium rounded-3xl p-10 text-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-50" />
+          <div className="relative z-10">
+            <Users size={40} className="text-primary/40 mx-auto mb-4" />
+            <h3 className="text-lg font-bold font-display mb-2">Feed Vazio</h3>
+            <p className="text-xs text-muted-foreground max-w-[200px] mx-auto leading-relaxed">
+              Ainda não há nada por aqui. Seja o primeiro a inspirar a comunidade! 💪
+            </p>
+          </div>
         </div>
       )}
 

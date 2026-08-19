@@ -36,8 +36,8 @@ export default function BottomNav() {
   }, [user?.id]);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-border/50">
-      <div className="flex items-center justify-around py-2 px-2 max-w-lg mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-premium border-t border-white/5 pb-[env(safe-area-inset-bottom)]">
+      <div className="flex items-center justify-around py-3 px-2 max-w-lg mx-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || (item.path === "/messages" && location.pathname.startsWith("/messages"));
           return (
