@@ -693,6 +693,6 @@ function PWAInstallHint() {
         Pular
       </button>
     </motion.div>
-
   );
+
 }
