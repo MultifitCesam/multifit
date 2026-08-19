@@ -604,12 +604,13 @@ export default function CommunityPage() {
               className="w-full max-w-lg bg-secondary border-t border-x border-border/50 rounded-t-[24px] sm:rounded-[24px] sm:border flex flex-col max-h-[85vh]"
             >
 
-              <div className="flex items-center justify-between p-4 border-b border-border/40">
-                <h2 className="font-bold">Comentários</h2>
+              <div className="flex items-center justify-between p-5 border-b border-border/30">
+                <h2 className="text-base font-medium text-foreground">Comentários</h2>
                 <button onClick={() => setActiveComments(null)} className="text-muted-foreground">
                   <X size={18} />
                 </button>
               </div>
+
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
                 {commentLoading && (
                   <div className="flex justify-center py-6">
@@ -623,10 +624,11 @@ export default function CommunityPage() {
                   <div key={c.id} className="flex gap-3">
                     <Avatar profile={c.author} size={32} />
                     <div className="flex-1">
-                      <div className="bg-secondary/60 rounded-2xl px-3 py-2">
-                        <p className="text-xs font-bold">{c.author?.name || "Usuário"}</p>
-                        <p className="text-sm leading-relaxed break-words">{c.content}</p>
+                      <div className="bg-background border border-border/50 rounded-[14px] px-3 py-2">
+                        <p className="text-[12px] font-semibold text-foreground">{c.author?.name || "Usuário"}</p>
+                        <p className="text-[13px] text-muted-foreground leading-relaxed break-words">{c.content}</p>
                       </div>
+
                       <div className="flex items-center gap-3 mt-1 ml-2">
                         <span className="text-[10px] text-muted-foreground">
                           {formatDistanceToNow(new Date(c.created_at), { addSuffix: true, locale: ptBR })}
@@ -644,7 +646,7 @@ export default function CommunityPage() {
                   </div>
                 ))}
               </div>
-              <div className="p-3 border-t border-border/40 flex gap-2">
+              <div className="p-4 border-t border-border/30 flex gap-3 bg-secondary rounded-b-[24px]">
                 <input
                   id="comment-input"
                   value={commentText}
@@ -653,16 +655,17 @@ export default function CommunityPage() {
                   placeholder={user ? "Adicione um comentário..." : "Faça login para comentar"}
                   disabled={!user}
                   maxLength={500}
-                  className="flex-1 bg-secondary/60 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50 transition-transform duration-200"
+                  className="flex-1 bg-background border border-border/50 rounded-xl px-4 py-2.5 text-[13px] focus:outline-none focus:ring-1 focus:ring-primary/50 disabled:opacity-50 transition-all"
                 />
                 <button
                   onClick={postComment}
                   disabled={!user || !commentText.trim()}
-                  className="bg-gradient-primary text-primary-foreground rounded-full px-4 py-2 text-sm font-bold disabled:opacity-40 active:scale-90 transition-transform"
+                  className="bg-primary text-primary-foreground rounded-xl px-4 py-2.5 text-sm font-semibold disabled:opacity-40 active:scale-95 transition-all"
                 >
-                  <Send size={14} />
+                  <Send size={16} />
                 </button>
               </div>
+
             </motion.div>
           </motion.div>
         )}
@@ -679,18 +682,20 @@ export default function CommunityPage() {
             <motion.div
               initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 30, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md glass rounded-2xl p-5"
+              className="w-full max-w-md bg-secondary border border-border/50 rounded-[24px] p-6 shadow-2xl"
             >
-              <div className="flex items-center gap-2 mb-4">
-                <Flag size={18} className="text-destructive" />
-                <h2 className="font-bold">Denunciar post</h2>
+              <div className="flex items-center gap-3 mb-6">
+                <Flag size={20} className="text-destructive" />
+                <h2 className="text-base font-medium text-foreground">Denunciar publicação</h2>
               </div>
-              <label className="text-xs font-bold text-muted-foreground mb-1.5 block">Motivo</label>
+
+              <label className="text-[11px] font-medium text-muted-foreground uppercase mb-1.5 px-1 block tracking-tight">Motivo</label>
               <select
                 value={reportReason}
                 onChange={(e) => setReportReason(e.target.value)}
-                className="w-full bg-secondary rounded-xl px-3 py-3 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full bg-background border border-border/50 rounded-[14px] px-3 py-3.5 text-sm mb-4 focus:outline-none focus:ring-1 focus:ring-primary/50"
               >
+
                 <option>Spam</option>
                 <option>Conteúdo inadequado</option>
                 <option>Discurso de ódio</option>
@@ -699,26 +704,28 @@ export default function CommunityPage() {
                 <option>Violência</option>
                 <option>Outro</option>
               </select>
-              <label className="text-xs font-bold text-muted-foreground mb-1.5 block">Detalhes (opcional)</label>
+              <label className="text-[11px] font-medium text-muted-foreground uppercase mb-1.5 px-1 block tracking-tight">Detalhes (opcional)</label>
               <textarea
                 value={reportDetails}
                 onChange={(e) => setReportDetails(e.target.value.slice(0, 500))}
                 rows={3}
                 placeholder="Conte mais sobre o problema..."
-                className="w-full bg-secondary rounded-xl px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 mb-4"
+                className="w-full bg-background border border-border/50 rounded-[14px] px-3 py-3 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50 mb-6"
               />
+
               <div className="flex gap-2">
-                <button onClick={() => setReportPostId(null)} className="flex-1 bg-secondary py-3 rounded-xl text-sm font-medium">
+                <button onClick={() => setReportPostId(null)} className="flex-1 bg-background border border-border/50 py-4 rounded-[14px] text-sm font-medium">
                   Cancelar
                 </button>
                 <button
                   onClick={submitReport}
                   disabled={reporting}
-                  className="flex-1 bg-destructive text-destructive-foreground py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="flex-1 bg-destructive text-destructive-foreground py-4 rounded-[14px] text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
                 >
-                  {reporting ? <Loader2 size={14} className="animate-spin" /> : <Flag size={14} />}
+                  {reporting ? <Loader2 size={16} className="animate-spin" /> : <Flag size={16} />}
                   Enviar
                 </button>
+
               </div>
             </motion.div>
           </motion.div>
@@ -746,10 +753,11 @@ function ActionBtn({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1.5 transition active:scale-95 ${
+      className={`flex items-center gap-1.5 transition-all active:scale-[0.98] ${
         active ? activeClass : "text-muted-foreground hover:text-foreground"
       } ${className}`}
     >
+
       {children}
     </button>
   );
