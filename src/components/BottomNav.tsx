@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Home, Bot, Users, Footprints, MessageCircle } from "lucide-react";
+import { Home, Bot, Users, Footprints, MessageCircle, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,7 @@ const navItems = [
   { icon: Users, label: "Social", path: "/community" },
   { icon: MessageCircle, label: "DMs", path: "/messages", badge: true },
   { icon: Bot, label: "Coach", path: "/chat" },
+  { icon: User, label: "Perfil", path: "/profile" },
 ];
 
 export default function BottomNav() {

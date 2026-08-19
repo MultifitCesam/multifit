@@ -205,6 +205,14 @@ export default function CommunityPage() {
         p.id === post.id ? { ...p, liked: !p.liked, likes_count: p.likes_count + (p.liked ? -1 : 1) } : p
       )
     );
+    
+    // Add haptic-like animation to button
+    const btn = document.querySelector(`#post-${post.id} .like-btn`);
+    if (btn) {
+      btn.classList.add("scale-125");
+      setTimeout(() => btn.classList.remove("scale-125"), 200);
+    }
+
     if (post.liked) {
       await supabase.from("post_likes").delete().eq("post_id", post.id).eq("user_id", user.id);
     } else {
@@ -221,6 +229,10 @@ export default function CommunityPage() {
       return;
     }
     const target = post.original ?? post;
+    
+    // Optimistic UI or feedback
+    toast.success("Repostando...");
+    
     const { error } = await supabase.from("posts").insert({
       user_id: user.id,
       caption: "",
@@ -232,7 +244,7 @@ export default function CommunityPage() {
       toast.error("Erro ao repostar");
       return;
     }
-    toast.success("Repostado!");
+    toast.success("Compartilhado no seu feed! 🔄");
     loadFeed();
   }
 
@@ -272,6 +284,14 @@ export default function CommunityPage() {
     if (!user || !activeComments || !commentText.trim()) return;
     const text = commentText.trim();
     setCommentText("");
+    
+    // Animation trigger for input
+    const input = document.querySelector("#comment-input");
+    if (input) {
+      input.classList.add("translate-y-[-4px]");
+      setTimeout(() => input.classList.remove("translate-y-[-4px]"), 200);
+    }
+
     const { error } = await supabase
       .from("post_comments")
       .insert({ post_id: activeComments, user_id: user.id, content: text });
@@ -443,7 +463,12 @@ export default function CommunityPage() {
               )}
 
               <div className="flex items-center gap-5 px-4 py-3">
-                <ActionBtn onClick={() => toggleLike(post)} active={post.liked} activeClass="text-neon-pink">
+                <ActionBtn 
+                  onClick={() => toggleLike(post)} 
+                  active={post.liked} 
+                  activeClass="text-neon-pink"
+                  className="like-btn transition-transform duration-200"
+                >
                   <motion.span
                     key={String(post.liked)}
                     initial={{ scale: 1 }}
@@ -456,11 +481,12 @@ export default function CommunityPage() {
                   <span className="text-xs">{post.likes_count}</span>
                 </ActionBtn>
 
-                <ActionBtn onClick={() => openComments(post.id)}>
+                <ActionBtn onClick={() => openComments(post.id)} className="hover:text-primary transition-colors">
                   <MessageCircle size={18} />
                   <span className="text-xs">{post.comments_count}</span>
                 </ActionBtn>
-                <ActionBtn onClick={() => repost(post)}>
+                
+                <ActionBtn onClick={() => repost(post)} className="hover:text-primary transition-colors active:rotate-180 duration-500">
                   <Repeat2 size={18} />
                   <span className="text-xs">{post.reposts_count}</span>
                 </ActionBtn>
@@ -614,18 +640,19 @@ export default function CommunityPage() {
               </div>
               <div className="p-3 border-t border-border/40 flex gap-2">
                 <input
+                  id="comment-input"
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && postComment()}
                   placeholder={user ? "Adicione um comentário..." : "Faça login para comentar"}
                   disabled={!user}
                   maxLength={500}
-                  className="flex-1 bg-secondary/60 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50"
+                  className="flex-1 bg-secondary/60 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50 transition-transform duration-200"
                 />
                 <button
                   onClick={postComment}
                   disabled={!user || !commentText.trim()}
-                  className="bg-gradient-primary text-primary-foreground rounded-full px-4 py-2 text-sm font-bold disabled:opacity-40"
+                  className="bg-gradient-primary text-primary-foreground rounded-full px-4 py-2 text-sm font-bold disabled:opacity-40 active:scale-90 transition-transform"
                 >
                   <Send size={14} />
                 </button>
