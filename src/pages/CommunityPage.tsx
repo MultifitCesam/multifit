@@ -346,14 +346,12 @@ export default function CommunityPage() {
   }
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6 max-w-lg mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold font-display">
-          <span className="text-gradient">Comunidade</span>
-        </h1>
+    <div className="min-h-screen pb-24 px-5 pt-8 max-w-lg mx-auto bg-background">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-xl font-medium text-foreground">Comunidade</h1>
         <button
           onClick={() => setComposerOpen(true)}
-          className="bg-gradient-primary text-primary-foreground p-2.5 rounded-full shadow-lg active:scale-95 transition"
+          className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg active:scale-95 transition-all"
           aria-label="Nova postagem"
         >
           <Plus size={18} />
@@ -367,17 +365,17 @@ export default function CommunityPage() {
       )}
 
       {!loading && posts.length === 0 && (
-        <div className="glass-premium rounded-3xl p-10 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-50" />
+        <div className="bg-secondary border border-border/50 rounded-[20px] p-10 text-center relative overflow-hidden">
           <div className="relative z-10">
-            <Users size={40} className="text-primary/40 mx-auto mb-4" />
-            <h3 className="text-lg font-bold font-display mb-2">Feed Vazio</h3>
-            <p className="text-xs text-muted-foreground max-w-[200px] mx-auto leading-relaxed">
+            <Users size={32} className="text-muted-foreground/30 mx-auto mb-4" />
+            <h3 className="text-base font-medium text-foreground mb-2">Feed vazio</h3>
+            <p className="text-[13px] text-muted-foreground max-w-[200px] mx-auto leading-relaxed">
               Ainda não há nada por aqui. Seja o primeiro a inspirar a comunidade! 💪
             </p>
           </div>
         </div>
       )}
+
 
       <div className="space-y-4">
         {posts.map((post, i) => {
@@ -387,11 +385,12 @@ export default function CommunityPage() {
             <motion.article
               id={`post-${post.id}`}
               key={post.id}
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(i * 0.04, 0.3) }}
-              className="glass rounded-2xl overflow-hidden"
+              className="bg-secondary border border-border/50 rounded-[20px] overflow-hidden mb-4"
             >
+
               {isRepost && (
                 <div className="px-4 pt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
                   <Repeat2 size={12} />
@@ -409,11 +408,12 @@ export default function CommunityPage() {
                   onClick={() => display.author?.username && navigate(`/u/${display.author.username}`)}
                   className="flex-1 min-w-0 text-left"
                 >
-                  <p className="text-sm font-bold truncate">{display.author?.name || "Usuário"}</p>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-sm font-medium text-foreground truncate">{display.author?.name || "Usuário"}</p>
+                  <p className="text-[11px] text-muted-foreground font-medium">
                     {display.author?.username ? `@${display.author.username} • ` : ""}
                     {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: ptBR })}
                   </p>
+
                 </button>
                 <div className="relative">
                   <button
