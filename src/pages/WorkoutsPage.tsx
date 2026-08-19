@@ -163,7 +163,7 @@ export default function WorkoutsPage() {
 
           {/* Days */}
           {plan.weeklyPlan.map((day, i) => (
-            <WorkoutDayCard key={day.day} day={day} index={i} onStart={() => nav(`/workouts/session?day=${i}`)} />
+            <WorkoutDayCard key={day.day} day={day} index={i} onStart={() => nav(`/workouts/session?day=${i}&planId=${plan?.id || ''}`)} />
           ))}
 
           {/* Tips */}

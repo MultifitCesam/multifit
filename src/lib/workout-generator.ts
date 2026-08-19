@@ -32,9 +32,11 @@ export interface WorkoutDay {
   type: "musculacao" | "funcional" | "cardio" | "descanso";
   warmup: string;
   exercises: Exercise[];
+  id?: string;
 }
 
 export interface WorkoutPlan {
+  id?: string;
   explanation: string;
   weeklyPlan: WorkoutDay[];
   tips: string[];
