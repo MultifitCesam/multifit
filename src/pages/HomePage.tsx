@@ -51,6 +51,8 @@ export default function HomePage() {
 
   const isProfileComplete = !!profile?.name && (profile as any)?.onboarded;
 
+  if (loading) return <HomePageSkeleton />;
+
   return (
     <div className="min-h-screen pb-24 px-4 pt-6 max-w-lg mx-auto">
       <motion.div
