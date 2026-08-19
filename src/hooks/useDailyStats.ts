@@ -67,5 +67,16 @@ export function useDailyStats() {
     return update({ [field]: v } as Partial<DailyStats>);
   }, [stats, update]);
 
-  return { stats, loading, update, add, reload: load };
+  const getHistory = useCallback(async (days = 7) => {
+    if (!user) return [];
+    const { data } = await supabase
+      .from("daily_stats")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("day", { ascending: false })
+      .limit(days);
+    return (data || []) as DailyStats[];
+  }, [user?.id]);
+
+  return { stats, loading, update, add, reload: load, getHistory };
 }
