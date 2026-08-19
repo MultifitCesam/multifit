@@ -161,20 +161,25 @@ export default function ChatPage() {
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 space-y-3 pb-4">
         {messages.length === 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass rounded-2xl p-5 mt-4">
-            <Sparkles size={22} className="text-primary mb-2" />
-            <p className="text-sm font-medium mb-1">Olá! Sou seu coach pessoal.</p>
-            <p className="text-xs text-muted-foreground mb-4">
-              Tire dúvidas sobre treino, nutrição, sono e recuperação. Suas respostas usam seu perfil para serem personalizadas.
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            className="glass-premium rounded-3xl p-8 mt-4 relative overflow-hidden"
+          >
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
+            <Sparkles size={28} className="text-primary mb-4" />
+            <h2 className="text-lg font-black font-display tracking-tight mb-2">Seu Coach Pessoal</h2>
+            <p className="text-sm text-foreground/80 mb-6 leading-relaxed">
+              Tire dúvidas sobre treino, nutrição e recuperação. Suas respostas usam seu perfil para serem totalmente personalizadas.
             </p>
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               {suggestions.map(s => (
                 <button
                   key={s}
                   onClick={() => send(s)}
-                  className="w-full text-left text-xs bg-secondary hover:bg-secondary/80 px-3 py-2.5 rounded-xl transition-colors"
+                  className="w-full text-left text-xs bg-secondary/50 hover:bg-secondary border border-white/5 hover:border-primary/30 px-4 py-3 rounded-2xl transition-all duration-300 group"
                 >
-                  {s}
+                  <span className="group-hover:text-primary transition-colors">{s}</span>
                 </button>
               ))}
             </div>
