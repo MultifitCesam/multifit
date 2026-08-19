@@ -58,10 +58,10 @@ export default function HomePage() {
         <div className="flex items-center gap-3">
           <img src={logo} alt="MultiFit" className="w-12 h-12 object-contain" />
           <div>
-            <p className="text-xs text-muted-foreground">Olá,</p>
-            <h1 className="text-xl font-bold font-display">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Olá,</p>
+            <h1 className="text-2xl font-black font-display tracking-tight leading-tight">
               {isProfileComplete ? profile!.name.split(" ")[0] : "Atleta"}{" "}
-              <span className="text-gradient">MultiFit</span>
+              <span className="premium-gradient-text">MultiFit</span>
             </h1>
           </div>
         </div>
