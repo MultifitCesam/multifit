@@ -97,9 +97,14 @@ export default function HomePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="glass glow-border rounded-2xl p-5 mb-6"
+        className="glass-premium rounded-2xl p-5 mb-8 relative overflow-hidden"
       >
-        <p className="text-sm text-foreground/80 italic font-body leading-relaxed">{quote}</p>
+        <div className="absolute top-0 right-0 p-3 opacity-10">
+          <TrendingUp size={48} className="text-primary" />
+        </div>
+        <p className="text-sm text-foreground/90 italic font-medium leading-relaxed relative z-10">
+          "{quote}"
+        </p>
       </motion.div>
 
       {!isProfileComplete && !loading && (
