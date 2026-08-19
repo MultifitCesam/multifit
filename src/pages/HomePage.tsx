@@ -134,24 +134,28 @@ export default function HomePage() {
           value={stats?.calories ?? 0} goal={stats?.calories_goal ?? 500} unit="kcal"
           quickSteps={[50, 200]}
           onChange={(v) => update({ calories: v })}
+          className="premium-card-hover"
         />
         <EditableStatCard
           icon={Footprints} label="Passos" variant="accent"
           value={stats?.steps ?? 0} goal={stats?.steps_goal ?? 10000}
           quickSteps={[500, 2000]}
           onChange={(v) => update({ steps: v })}
+          className="premium-card-hover"
         />
         <EditableStatCard
           icon={Timer} label="Tempo ativo"
           value={stats?.active_minutes ?? 0} goal={stats?.active_minutes_goal ?? 60} unit="min"
           quickSteps={[10, 30]}
           onChange={(v) => update({ active_minutes: v })}
+          className="premium-card-hover"
         />
         <EditableStatCard
           icon={Droplet} label="Água"
           value={stats?.water_ml ?? 0} goal={stats?.water_ml_goal ?? 2000} unit="ml"
           quickSteps={[250, 500]}
           onChange={(v) => update({ water_ml: v })}
+          className="premium-card-hover"
         />
       </div>
 
