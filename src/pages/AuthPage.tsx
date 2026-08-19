@@ -99,18 +99,23 @@ export default function AuthPage() {
         className="w-full max-w-md"
       >
         <div className="text-center mb-10">
-          <motion.img
+          <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            src={logo}
-            alt="MultiFit"
-            className="w-44 h-44 mx-auto object-contain drop-shadow-[0_0_40px_rgba(132,204,22,0.3)]"
-          />
-          <h2 className="text-3xl font-black font-display tracking-tighter mt-4 premium-gradient-text">
+            className="w-44 h-44 mx-auto relative group"
+          >
+            <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-colors animate-pulse" />
+            <img
+              src={logo}
+              alt="MultiFit"
+              className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_15px_rgba(132,204,22,0.5)] rounded-full"
+            />
+          </motion.div>
+          <h2 className="text-4xl font-black font-display tracking-tighter mt-6 premium-gradient-text">
             MultiFit
           </h2>
-          <p className="text-sm text-muted-foreground mt-2 font-medium tracking-wide">
+          <p className="text-[10px] text-muted-foreground mt-2 font-bold tracking-[0.2em] uppercase opacity-70">
             {mode === "login" ? "BEM-VINDO DE VOLTA" : "COMECE SUA EVOLUÇÃO"}
           </p>
         </div>
@@ -119,34 +124,49 @@ export default function AuthPage() {
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-accent/10 rounded-full blur-3xl" />
           
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {mode === "signup" && (
-              <div>
-                <label className="text-xs font-bold text-muted-foreground mb-1.5 block">Nome</label>
-                <div className="relative">
-                  <UserIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
+                <label className="text-[10px] font-black text-muted-foreground mb-1.5 block uppercase tracking-wider ml-1">Nome</label>
+                <div className="relative group">
+                  <UserIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
                   <input
                     type="text"
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="Seu nome"
-                    className="w-full bg-secondary/50 border border-white/5 rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                    className="w-full bg-secondary/30 border border-white/5 rounded-2xl pl-11 pr-4 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/40"
                     required
                   />
                 </div>
-              </div>
+              </motion.div>
             )}
             <div>
-              <label className="text-xs font-bold text-muted-foreground mb-1.5 block">Email</label>
-              <div className="relative">
-                <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <label className="text-[10px] font-black text-muted-foreground mb-1.5 block uppercase tracking-wider ml-1">Email</label>
+              <div className="relative group">
+                <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 <input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="voce@email.com"
-                  className="w-full bg-secondary/50 border border-white/5 rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                  className="w-full bg-secondary/30 border border-white/5 rounded-2xl pl-11 pr-4 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/40"
                   required
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-[10px] font-black text-muted-foreground mb-1.5 block uppercase tracking-wider ml-1">Senha</label>
+              <div className="relative group">
+                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Mínimo 6 caracteres"
+                  className="w-full bg-secondary/30 border border-white/5 rounded-2xl pl-11 pr-4 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/40"
+                  required
+                  minLength={6}
                 />
               </div>
             </div>
