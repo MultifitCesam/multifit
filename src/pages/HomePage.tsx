@@ -151,26 +151,24 @@ export default function HomePage() {
       </div>
 
       <h2 className="text-lg font-bold font-display mb-3">Acesso Rápido</h2>
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-2 gap-4 mb-8 stagger-load">
         {[
-          { icon: Dumbbell, label: "Meu Treino", path: "/workouts", color: "primary" },
-          { icon: Bot, label: "Falar c/ Coach", path: "/chat", color: "accent" },
-          { icon: Apple, label: "Nutrição", path: "/nutrition", color: "primary" },
-          { icon: TrendingUp, label: "Evolução", path: "/dashboard", color: "accent" },
-
-        ].map((item, i) => (
+          { icon: Dumbbell, label: "Meu Treino", path: "/workouts", color: "primary", delay: "stagger-1" },
+          { icon: Bot, label: "Falar c/ Coach", path: "/chat", color: "accent", delay: "stagger-2" },
+          { icon: Apple, label: "Nutrição", path: "/nutrition", color: "primary", delay: "stagger-3" },
+          { icon: TrendingUp, label: "Evolução", path: "/dashboard", color: "accent", delay: "stagger-4" },
+        ].map((item) => (
           <motion.button
             key={item.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 * i }}
+            whileHover={{ scale: 1.02, translateY: -2 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => navigate(item.path)}
-            className="glass rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-primary/30 transition-all"
+            className={`glass-premium rounded-2xl p-5 flex flex-col items-center gap-3 transition-all duration-300 hover:border-primary/40 group ${item.delay}`}
           >
-            <div className={`p-3 rounded-xl ${item.color === "primary" ? "bg-primary/15" : "bg-accent/15"}`}>
-              <item.icon size={22} className={item.color === "primary" ? "text-primary" : "text-accent"} />
+            <div className={`p-4 rounded-2xl transition-transform duration-300 group-hover:scale-110 ${item.color === "primary" ? "bg-primary/10 shadow-[0_0_15px_rgba(132,204,22,0.1)]" : "bg-accent/10 shadow-[0_0_15px_rgba(132,204,22,0.1)]"}`}>
+              <item.icon size={26} className={item.color === "primary" ? "text-primary" : "text-accent"} />
             </div>
-            <span className="text-xs font-medium">{item.label}</span>
+            <span className="text-sm font-semibold tracking-tight">{item.label}</span>
           </motion.button>
         ))}
       </div>
