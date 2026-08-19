@@ -14,41 +14,43 @@ function WorkoutDayCard({ day, index, onStart }: { day: WorkoutDay; index: numbe
   if (day.type === "descanso") {
     return (
       <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.05 }}
-        className="glass rounded-2xl p-4 border-border/30"
+        className="bg-secondary/40 border border-border/30 rounded-[14px] p-4"
       >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">😴</div>
+        <div className="flex items-center gap-4">
+          <div className="w-9 h-9 rounded-xl bg-background border border-border/50 flex items-center justify-center text-sm">😴</div>
           <div>
-            <p className="font-bold font-display text-sm">{day.day}</p>
-            <p className="text-xs text-muted-foreground">Descanso ativo — alongamento e recuperação</p>
+            <p className="font-medium text-sm text-foreground leading-tight mb-1">{day.day}</p>
+            <p className="text-[12px] text-muted-foreground font-medium">descanso ativo — alongamento e recuperação</p>
           </div>
         </div>
       </motion.div>
     );
   }
 
+
   const typeIcon = day.type === "cardio" ? "🏃" : day.type === "funcional" ? "⚡" : "🏋️";
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="glass rounded-2xl overflow-hidden glow-border"
+      className="bg-secondary border border-border/50 rounded-[20px] overflow-hidden"
     >
-      <button onClick={() => setOpen(!open)} className="w-full p-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center text-lg">{typeIcon}</div>
+      <button onClick={() => setOpen(!open)} className="w-full p-4 flex items-center justify-between group active:bg-background/20 transition-colors">
+        <div className="flex items-center gap-4">
+          <div className="w-9 h-9 rounded-xl bg-background border border-border/50 flex items-center justify-center text-sm">{typeIcon}</div>
           <div className="text-left">
-            <p className="font-bold font-display text-sm">{day.day}</p>
-            <p className="text-xs text-muted-foreground">{day.focus} • {day.exercises.length} exercícios</p>
+            <p className="font-medium text-sm text-foreground leading-tight mb-1">{day.day}</p>
+            <p className="text-[12px] text-muted-foreground font-medium">{day.focus} • {day.exercises.length} exercícios</p>
           </div>
         </div>
-        {open ? <ChevronUp size={18} className="text-muted-foreground" /> : <ChevronDown size={18} className="text-muted-foreground" />}
+        {open ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
       </button>
+
 
       <AnimatePresence>
         {open && (
@@ -60,32 +62,33 @@ function WorkoutDayCard({ day, index, onStart }: { day: WorkoutDay; index: numbe
           >
             <div className="px-4 pb-4 space-y-3">
               {day.warmup && (
-                <div className="bg-accent/10 rounded-xl p-3">
-                  <p className="text-xs font-bold text-accent mb-1">🔥 Aquecimento</p>
-                  <p className="text-xs text-muted-foreground">{day.warmup}</p>
+                <div className="bg-background border border-border/30 rounded-[14px] p-4">
+                  <p className="text-[11px] font-medium text-primary uppercase mb-1.5 tracking-tight">🔥 aquecimento</p>
+                  <p className="text-[13px] text-muted-foreground leading-relaxed">{day.warmup}</p>
                 </div>
               )}
               {day.exercises.map((ex, i) => (
-                <div key={i} className="bg-secondary/50 rounded-xl p-3">
-                  <div className="flex items-center justify-between mb-1 gap-2">
-                    <p className="text-sm font-bold flex-1">{ex.name}</p>
-                    <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">{ex.muscleGroup}</span>
+                <div key={i} className="bg-background border border-border/30 rounded-[14px] p-4">
+                  <div className="flex items-center justify-between mb-2 gap-2">
+                    <p className="text-sm font-medium flex-1 text-foreground leading-tight">{ex.name}</p>
+                    <span className="text-[10px] text-primary font-medium uppercase px-2 py-0.5">{ex.muscleGroup}</span>
                     <ExerciseVideo exerciseName={ex.name} />
                   </div>
-                  <p className="text-xs text-muted-foreground mb-2">{ex.description}</p>
-                  <div className="flex gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><Dumbbell size={12} /> {ex.sets}x{ex.reps}</span>
-                    <span className="flex items-center gap-1"><Clock size={12} /> {ex.rest}</span>
+                  <p className="text-[12px] text-muted-foreground font-normal leading-relaxed mb-3">{ex.description}</p>
+                  <div className="flex gap-4 text-[11px] text-muted-foreground font-medium uppercase">
+                    <span className="flex items-center gap-1.5"><Dumbbell size={14} /> {ex.sets}x{ex.reps}</span>
+                    <span className="flex items-center gap-1.5"><Clock size={14} /> {ex.rest}</span>
                   </div>
                 </div>
               ))}
               <button
                 onClick={(e) => { e.stopPropagation(); onStart(); }}
-                className="w-full mt-2 bg-gradient-primary text-primary-foreground font-bold py-3 rounded-xl flex items-center justify-center gap-2"
+                className="w-full mt-2 bg-primary text-primary-foreground font-semibold py-4 rounded-[14px] flex items-center justify-center gap-2"
               >
                 <Play size={16} /> Executar treino
               </button>
             </div>
+
           </motion.div>
         )}
       </AnimatePresence>
@@ -122,33 +125,33 @@ export default function WorkoutsPage() {
   };
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6 max-w-lg mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold font-display">Meus <span className="text-gradient">Treinos</span></h1>
+    <div className="min-h-screen pb-24 px-5 pt-8 max-w-lg mx-auto bg-background">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-xl font-medium text-foreground">Meus treinos</h1>
         {plan && (
-          <button onClick={handleGenerate} className="p-2 rounded-xl bg-secondary">
-            <RefreshCw size={18} className="text-muted-foreground" />
+          <button onClick={handleGenerate} className="p-2.5 rounded-xl bg-secondary border border-border/50 text-muted-foreground active:scale-95 transition-all">
+            <RefreshCw size={18} />
           </button>
         )}
       </div>
 
       {!plan ? (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
-          <div className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-6">
-            <Zap size={36} className="text-primary" />
+          <div className="w-16 h-16 rounded-[20px] bg-[hsl(var(--bg-success))] flex items-center justify-center mx-auto mb-6">
+            <Zap size={28} className="text-primary" />
           </div>
-          <h2 className="text-xl font-bold font-display mb-2">Gere seu treino com IA</h2>
-          <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto">
+          <h2 className="text-base font-medium text-foreground mb-2">Gere seu treino com IA</h2>
+          <p className="text-[13px] text-muted-foreground mb-8 max-w-[240px] mx-auto leading-relaxed">
             {isProfileComplete
-              ? "Baseado no seu perfil, vamos criar o treino perfeito para você."
+              ? "Baseado no seu perfil, vamos criar o plano perfeito para você."
               : "Complete seu perfil primeiro para treinos personalizados."}
           </p>
           <button
             onClick={handleGenerate}
-            className="bg-gradient-primary text-primary-foreground font-bold px-8 py-3 rounded-full flex items-center gap-2 mx-auto"
+            className="bg-primary text-primary-foreground font-semibold px-8 py-4 rounded-[14px] flex items-center gap-2 mx-auto active:scale-[0.98] transition-all"
           >
-            <Play size={18} />
-            Gerar Treino Personalizado
+            <Play size={16} />
+            Gerar treino agora
           </button>
         </motion.div>
       ) : loading ? (
@@ -156,9 +159,9 @@ export default function WorkoutsPage() {
       ) : (
         <div className="space-y-4">
           {/* Explanation */}
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass glow-border rounded-2xl p-4 mb-2">
-            <p className="text-xs font-bold text-primary mb-1">🧠 Por que este treino?</p>
-            <p className="text-xs text-muted-foreground leading-relaxed">{plan.explanation}</p>
+          <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="bg-secondary border border-border/50 rounded-[20px] p-5 mb-2">
+            <p className="text-[11px] font-medium text-primary uppercase mb-1.5 tracking-tight">🧠 por que este treino?</p>
+            <p className="text-[13px] text-muted-foreground leading-relaxed">{plan.explanation}</p>
           </motion.div>
 
           {/* Days */}
@@ -167,22 +170,26 @@ export default function WorkoutsPage() {
           ))}
 
           {/* Tips */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass rounded-2xl p-4">
-            <p className="text-sm font-bold font-display mb-2">💡 Dicas</p>
-            <ul className="space-y-1.5">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-secondary border border-border/50 rounded-[20px] p-5">
+            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-tight mb-3 px-1">💡 dicas essenciais</p>
+            <ul className="space-y-2">
               {plan.tips.map((tip, i) => (
-                <li key={i} className="text-xs text-muted-foreground">• {tip}</li>
+                <li key={i} className="text-[13px] text-foreground flex gap-3 leading-relaxed">
+                  <span className="text-primary font-bold">•</span>
+                  {tip}
+                </li>
               ))}
             </ul>
           </motion.div>
 
           {/* Evolution */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass rounded-2xl p-4 border-accent/20">
-            <p className="text-sm font-bold font-display mb-1">📈 Evolução</p>
-            <p className="text-xs text-muted-foreground">{plan.evolution}</p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-secondary border border-border/50 rounded-[20px] p-5">
+            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-tight mb-1.5 px-1">📈 progressão</p>
+            <p className="text-[13px] text-muted-foreground leading-relaxed px-1">{plan.evolution}</p>
           </motion.div>
         </div>
       )}
+
 
       <BottomNav />
     </div>
