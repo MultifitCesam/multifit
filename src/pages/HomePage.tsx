@@ -58,10 +58,10 @@ export default function HomePage() {
         <div className="flex items-center gap-3">
           <img src={logo} alt="MultiFit" className="w-12 h-12 object-contain" />
           <div>
-            <p className="text-xs text-muted-foreground">Olá,</p>
-            <h1 className="text-xl font-bold font-display">
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Olá,</p>
+            <h1 className="text-2xl font-black font-display tracking-tight leading-tight">
               {isProfileComplete ? profile!.name.split(" ")[0] : "Atleta"}{" "}
-              <span className="text-gradient">MultiFit</span>
+              <span className="premium-gradient-text">MultiFit</span>
             </h1>
           </div>
         </div>
@@ -97,9 +97,14 @@ export default function HomePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="glass glow-border rounded-2xl p-5 mb-6"
+        className="glass-premium rounded-2xl p-5 mb-8 relative overflow-hidden"
       >
-        <p className="text-sm text-foreground/80 italic font-body leading-relaxed">{quote}</p>
+        <div className="absolute top-0 right-0 p-3 opacity-10">
+          <TrendingUp size={48} className="text-primary" />
+        </div>
+        <p className="text-sm text-foreground/90 italic font-medium leading-relaxed relative z-10">
+          "{quote}"
+        </p>
       </motion.div>
 
       {!isProfileComplete && !loading && (
@@ -119,9 +124,9 @@ export default function HomePage() {
         </motion.button>
       )}
 
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-lg font-bold font-display">Hoje</h2>
-        <span className="text-[10px] text-muted-foreground uppercase tracking-wide">toque para editar</span>
+      <div className="flex items-end justify-between mb-4 px-1">
+        <h2 className="text-xl font-black font-display tracking-tight">Atividade</h2>
+        <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest bg-secondary/50 px-2 py-0.5 rounded-full">Edição habilitada</span>
       </div>
       <div className="grid grid-cols-2 gap-3 mb-6">
         <EditableStatCard
@@ -129,73 +134,87 @@ export default function HomePage() {
           value={stats?.calories ?? 0} goal={stats?.calories_goal ?? 500} unit="kcal"
           quickSteps={[50, 200]}
           onChange={(v) => update({ calories: v })}
+          className="premium-card-hover"
         />
         <EditableStatCard
           icon={Footprints} label="Passos" variant="accent"
           value={stats?.steps ?? 0} goal={stats?.steps_goal ?? 10000}
           quickSteps={[500, 2000]}
           onChange={(v) => update({ steps: v })}
+          className="premium-card-hover"
         />
         <EditableStatCard
           icon={Timer} label="Tempo ativo"
           value={stats?.active_minutes ?? 0} goal={stats?.active_minutes_goal ?? 60} unit="min"
           quickSteps={[10, 30]}
           onChange={(v) => update({ active_minutes: v })}
+          className="premium-card-hover"
         />
         <EditableStatCard
           icon={Droplet} label="Água"
           value={stats?.water_ml ?? 0} goal={stats?.water_ml_goal ?? 2000} unit="ml"
           quickSteps={[250, 500]}
           onChange={(v) => update({ water_ml: v })}
+          className="premium-card-hover"
         />
       </div>
 
       <h2 className="text-lg font-bold font-display mb-3">Acesso Rápido</h2>
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-2 gap-4 mb-8 stagger-load">
         {[
-          { icon: Dumbbell, label: "Meu Treino", path: "/workouts", color: "primary" },
-          { icon: Bot, label: "Falar c/ Coach", path: "/chat", color: "accent" },
-          { icon: Apple, label: "Nutrição", path: "/nutrition", color: "primary" },
-          { icon: TrendingUp, label: "Evolução", path: "/dashboard", color: "accent" },
-
-        ].map((item, i) => (
+          { icon: Dumbbell, label: "Meu Treino", path: "/workouts", color: "primary", delay: "stagger-1" },
+          { icon: Bot, label: "Falar c/ Coach", path: "/chat", color: "accent", delay: "stagger-2" },
+          { icon: Apple, label: "Nutrição", path: "/nutrition", color: "primary", delay: "stagger-3" },
+          { icon: TrendingUp, label: "Evolução", path: "/dashboard", color: "accent", delay: "stagger-4" },
+        ].map((item) => (
           <motion.button
             key={item.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 * i }}
+            whileHover={{ scale: 1.02, translateY: -2 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => navigate(item.path)}
-            className="glass rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-primary/30 transition-all"
+            className={`glass-premium rounded-2xl p-5 flex flex-col items-center gap-3 transition-all duration-300 hover:border-primary/40 group ${item.delay}`}
           >
-            <div className={`p-3 rounded-xl ${item.color === "primary" ? "bg-primary/15" : "bg-accent/15"}`}>
-              <item.icon size={22} className={item.color === "primary" ? "text-primary" : "text-accent"} />
+            <div className={`p-4 rounded-2xl transition-transform duration-300 group-hover:scale-110 ${item.color === "primary" ? "bg-primary/10 shadow-[0_0_15px_rgba(132,204,22,0.1)]" : "bg-accent/10 shadow-[0_0_15px_rgba(132,204,22,0.1)]"}`}>
+              <item.icon size={26} className={item.color === "primary" ? "text-primary" : "text-accent"} />
             </div>
-            <span className="text-xs font-medium">{item.label}</span>
+            <span className="text-sm font-semibold tracking-tight">{item.label}</span>
           </motion.button>
         ))}
       </div>
 
-      <h2 className="text-lg font-bold font-display mb-3">Esta Semana</h2>
-      <div className="glass rounded-2xl p-4 mb-4">
-        <div className="flex justify-between mb-3">
+      <h2 className="text-lg font-bold font-display mb-3 px-1">Esta Semana</h2>
+      <div className="glass-premium rounded-3xl p-6 mb-10 stagger-load stagger-5">
+        <div className="flex justify-between items-end mb-6">
           {["S", "T", "Q", "Q", "S", "S", "D"].map((d, i) => (
-            <div key={i} className="flex flex-col items-center gap-1.5">
-              <span className="text-[10px] text-muted-foreground">{d}</span>
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+            <div key={i} className="flex flex-col items-center gap-2">
+              <span className="text-[10px] text-muted-foreground font-bold">{d}</span>
+              <motion.div
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                className={`w-9 h-9 rounded-2xl flex items-center justify-center text-xs font-bold transition-all ${
                   i < 5
-                    ? "bg-gradient-primary text-primary-foreground"
+                    ? "bg-gradient-primary text-primary-foreground shadow-neon scale-110"
                     : i === 5
-                    ? "border-2 border-primary/50 text-primary"
-                    : "bg-secondary text-muted-foreground"
+                    ? "border-2 border-primary/40 text-primary"
+                    : "bg-secondary/50 text-muted-foreground"
                 }`}
               >
                 {i < 5 ? "✓" : ""}
-              </div>
+              </motion.div>
             </div>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground text-center">5 de 7 treinos completados</p>
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground font-medium">Progresso semanal</span>
+          <span className="text-primary font-bold">5 de 7 treinos</span>
+        </div>
+        <div className="mt-2 h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+          <motion.div 
+            initial={{ width: 0 }}
+            animate={{ width: "71%" }}
+            className="h-full bg-gradient-primary"
+          />
+        </div>
       </div>
 
       <BottomNav />

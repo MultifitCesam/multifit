@@ -98,18 +98,27 @@ export default function AuthPage() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <div className="text-center mb-8">
-          <img
+        <div className="text-center mb-10">
+          <motion.img
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
             src={logo}
             alt="MultiFit"
-            className="w-40 h-40 mx-auto object-contain drop-shadow-[0_0_30px_hsl(var(--primary)/0.4)]"
+            className="w-44 h-44 mx-auto object-contain drop-shadow-[0_0_40px_rgba(132,204,22,0.3)]"
           />
-          <p className="text-sm text-muted-foreground mt-1">
-            {mode === "login" ? "Entre para continuar treinando" : "Crie sua conta e comece hoje"}
+          <h2 className="text-3xl font-black font-display tracking-tighter mt-4 premium-gradient-text">
+            MultiFit
+          </h2>
+          <p className="text-sm text-muted-foreground mt-2 font-medium tracking-wide">
+            {mode === "login" ? "BEM-VINDO DE VOLTA" : "COMECE SUA EVOLUÇÃO"}
           </p>
         </div>
 
-        <div className="glass glow-border rounded-2xl p-6">
+        <div className="glass-premium rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-accent/10 rounded-full blur-3xl" />
+          
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "signup" && (
               <div>
@@ -121,7 +130,7 @@ export default function AuthPage() {
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="Seu nome"
-                    className="w-full bg-secondary rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="w-full bg-secondary/50 border border-white/5 rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
                     required
                   />
                 </div>
@@ -136,7 +145,7 @@ export default function AuthPage() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="voce@email.com"
-                  className="w-full bg-secondary rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="w-full bg-secondary/50 border border-white/5 rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
                   required
                 />
               </div>
@@ -150,31 +159,34 @@ export default function AuthPage() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Mínimo 6 caracteres"
-                  className="w-full bg-secondary rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="w-full bg-secondary/50 border border-white/5 rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
                   required
                   minLength={6}
                 />
               </div>
             </div>
 
-            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none pt-1">
-              <input
-                type="checkbox"
-                checked={keepLogged}
-                onChange={(e) => setKeepLogged(e.target.checked)}
-                className="w-4 h-4 rounded accent-primary"
-              />
-              Manter conectado neste dispositivo
+            <label className="flex items-center gap-3 text-xs text-muted-foreground cursor-pointer select-none pt-2 group">
+              <div className="relative flex items-center">
+                <input
+                  type="checkbox"
+                  checked={keepLogged}
+                  onChange={(e) => setKeepLogged(e.target.checked)}
+                  className="w-5 h-5 rounded-lg border-white/10 bg-secondary/50 accent-primary cursor-pointer transition-all"
+                />
+              </div>
+              <span className="group-hover:text-foreground transition-colors">Manter conectado neste dispositivo</span>
             </label>
 
             <motion.button
-              whileTap={{ scale: 0.97 }}
+              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.01 }}
               type="submit"
               disabled={busy}
-              className="w-full bg-gradient-primary text-primary-foreground font-bold py-3.5 rounded-xl shadow-neon disabled:opacity-60 flex items-center justify-center gap-2"
+              className="w-full bg-gradient-primary text-primary-foreground font-black py-4 rounded-xl shadow-neon disabled:opacity-60 flex items-center justify-center gap-2 mt-4 tracking-tight"
             >
-              {busy ? <Loader2 size={18} className="animate-spin" /> : null}
-              {mode === "login" ? "Entrar" : "Criar conta"}
+              {busy ? <Loader2 size={20} className="animate-spin" /> : null}
+              {mode === "login" ? "ENTRAR AGORA" : "CRIAR MINHA CONTA"}
             </motion.button>
           </form>
 
@@ -184,19 +196,21 @@ export default function AuthPage() {
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
             onClick={handleGoogle}
             disabled={busy}
-            className="w-full bg-secondary hover:bg-secondary/80 text-foreground font-medium py-3 rounded-xl flex items-center justify-center gap-3 transition-colors disabled:opacity-60"
+            className="w-full bg-secondary/50 hover:bg-secondary/80 text-foreground font-semibold py-3.5 rounded-xl border border-white/5 flex items-center justify-center gap-3 transition-all disabled:opacity-60"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24">
+            <svg width="20" height="20" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
               <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.83z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
             Continuar com Google
-          </button>
+          </motion.button>
 
           <button
             onClick={() => setMode(mode === "login" ? "signup" : "login")}

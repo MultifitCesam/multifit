@@ -11,6 +11,7 @@ interface EditableStatCardProps {
   variant?: "default" | "primary" | "accent";
   quickSteps?: number[]; // e.g. [100, 500] for steps
   onChange: (newValue: number) => void;
+  className?: string;
 }
 
 export default function EditableStatCard({
@@ -22,6 +23,7 @@ export default function EditableStatCard({
   variant = "default",
   quickSteps = [1],
   onChange,
+  className,
 }: EditableStatCardProps) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(value);
@@ -43,7 +45,7 @@ export default function EditableStatCard({
         animate={{ opacity: 1, y: 0 }}
         whileTap={{ scale: 0.97 }}
         onClick={() => { setDraft(value); setOpen(true); }}
-        className={`glass rounded-2xl p-4 text-left w-full ${borderClass}`}
+        className={`glass rounded-2xl p-4 text-left w-full ${borderClass} ${className || ""}`}
       >
         <div className="flex items-center gap-3">
           <div className={`p-2.5 rounded-xl ${iconBg}`}>
