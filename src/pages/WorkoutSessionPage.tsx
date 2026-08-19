@@ -9,16 +9,12 @@ import {
   Timer, 
   Dumbbell, 
   ArrowLeft,
-  Save,
-  Clock,
-  Zap,
-  Flame,
-  AlertCircle
+  Timer as TimerIcon
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
-import { generateWorkoutPlan, type WorkoutDay, type Exercise, type UserProfile } from "@/lib/workout-generator";
+import { generateWorkoutPlan, type WorkoutDay, type UserProfile } from "@/lib/workout-generator";
 import ExerciseVideo from "@/components/ExerciseVideo";
 import { toast } from "@/hooks/use-toast";
 
@@ -43,23 +39,21 @@ export default function WorkoutSessionPage() {
   useEffect(() => {
     if (!profile) return;
     
-    // Regenerate the same plan to get the specific day
-    // In a real app, we'd persist the plan in the DB
     const mapped: UserProfile = {
       name: profile.name,
-      gender: (profile as any).gender ?? null,
+      gender: profile.gender as any,
       age: profile.age,
       weight: Number(profile.weight),
       height: Number(profile.height),
-      level: profile.level,
-      goal: profile.goal,
-      bodyType: profile.body_type,
+      level: profile.level as any,
+      goal: profile.goal as any,
+      bodyType: profile.body_type as any,
       sleepHours: Number(profile.sleep_hours),
-      sleepQuality: profile.sleep_quality,
+      sleepQuality: profile.sleep_quality as any,
       weeklyFrequency: profile.weekly_frequency,
-      trainingTime: profile.training_time,
-      focusAreas: (profile as any).focus_areas ?? null,
-      healthConditions: (profile as any).health_conditions ?? null,
+      trainingTime: profile.training_time as any,
+      focusAreas: profile.focus_areas as any,
+      healthConditions: profile.health_conditions as any,
     };
     
     const plan = generateWorkoutPlan(mapped);
@@ -67,7 +61,6 @@ export default function WorkoutSessionPage() {
     
     if (day && day.type !== 'descanso') {
       setWorkoutDay(day);
-      // Initialize logs for each set of each exercise
       const initialLogs = day.exercises.flatMap((ex, exIdx) => 
         Array.from({ length: ex.sets }).map((_, setIdx) => ({
           exerciseIndex: exIdx,
@@ -129,16 +122,17 @@ export default function WorkoutSessionPage() {
     setIsFinishing(true);
     
     try {
-      const duration = Math.round((new Date().getTime() - sessionStartedAt.getTime()) / 60000);
+      const durationSeconds = Math.round((new Date().getTime() - sessionStartedAt.getTime()) / 1000);
       
       const { data: session, error: sError } = await supabase
         .from('workout_sessions')
         .insert({
           user_id: user.id,
-          plan_name: workoutDay.focus,
+          focus: workoutDay.focus,
+          day_label: workoutDay.day,
           started_at: sessionStartedAt.toISOString(),
-          ended_at: new Date().toISOString(),
-          duration_minutes: duration
+          finished_at: new Date().toISOString(),
+          duration_seconds: durationSeconds
         })
         .select()
         .single();
@@ -146,6 +140,7 @@ export default function WorkoutSessionPage() {
       if (sError) throw sError;
 
       const exerciseLogs = logs.map(log => ({
+        user_id: user.id,
         session_id: session.id,
         exercise_name: workoutDay.exercises[log.exerciseIndex].name,
         muscle_group: workoutDay.exercises[log.exerciseIndex].muscleGroup,
@@ -162,20 +157,20 @@ export default function WorkoutSessionPage() {
 
       if (lError) throw lError;
 
-      // Update basic daily stats too
+      const todayStr = new Date().toISOString().split('T')[0];
       const { data: currentStats } = await supabase
         .from('daily_stats')
         .select('active_minutes')
         .eq('user_id', user.id)
-        .eq('date', new Date().toISOString().split('T')[0])
-        .single();
+        .eq('day', todayStr)
+        .maybeSingle();
       
       await supabase
         .from('daily_stats')
         .upsert({
           user_id: user.id,
-          date: new Date().toISOString().split('T')[0],
-          active_minutes: (currentStats?.active_minutes || 0) + duration
+          day: todayStr,
+          active_minutes: (currentStats?.active_minutes || 0) + Math.round(durationSeconds / 60)
         });
 
       toast({ title: "Treino Concluído! 🏆", description: "Sua evolução foi registrada." });
@@ -196,7 +191,6 @@ export default function WorkoutSessionPage() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
       <div className="sticky top-0 z-40 glass-premium border-b border-white/5 px-4 py-4 flex items-center justify-between">
         <button onClick={() => navigate('/workouts')} className="p-2 -ml-2 rounded-xl hover:bg-secondary">
           <ArrowLeft size={20} />
@@ -209,7 +203,6 @@ export default function WorkoutSessionPage() {
       </div>
 
       <div className="max-w-lg mx-auto p-4">
-        {/* Progress Bar */}
         <div className="w-full h-1 bg-secondary rounded-full mb-6 overflow-hidden">
           <motion.div 
             className="h-full bg-primary"
@@ -218,7 +211,6 @@ export default function WorkoutSessionPage() {
           />
         </div>
 
-        {/* Exercise Info */}
         <motion.div 
           key={currentExercise.name}
           initial={{ opacity: 0, x: 20 }}
@@ -260,7 +252,6 @@ export default function WorkoutSessionPage() {
           </div>
         </motion.div>
 
-        {/* Sets Tracker */}
         <div className="space-y-3 mb-8">
           <h3 className="text-sm font-bold px-1 mb-2">Registro de Séries</h3>
           {exerciseLogs.map((log, i) => (
@@ -311,7 +302,6 @@ export default function WorkoutSessionPage() {
           ))}
         </div>
 
-        {/* Controls */}
         <div className="flex gap-4">
           <button 
             disabled={currentExerciseIndex === 0}
@@ -340,7 +330,6 @@ export default function WorkoutSessionPage() {
         </div>
       </div>
 
-      {/* Rest Timer Overlay */}
       <AnimatePresence>
         {isResting && (
           <motion.div 
@@ -351,7 +340,7 @@ export default function WorkoutSessionPage() {
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary animate-pulse">
-                <Timer size={20} />
+                <TimerIcon size={20} />
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Tempo de Descanso</p>
