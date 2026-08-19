@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, Dumbbell, Play, Clock, Zap, RefreshCw } from "l
 import BottomNav from "@/components/BottomNav";
 import ExerciseVideo from "@/components/ExerciseVideo";
 import { useProfile } from "@/hooks/useProfile";
+import { WorkoutSkeleton } from "@/components/PremiumSkeletons";
 import { generateWorkoutPlan, type WorkoutPlan, type WorkoutDay, type UserProfile } from "@/lib/workout-generator";
 
 function WorkoutDayCard({ day, index, onStart }: { day: WorkoutDay; index: number; onStart: () => void }) {
@@ -94,7 +95,7 @@ function WorkoutDayCard({ day, index, onStart }: { day: WorkoutDay; index: numbe
 
 export default function WorkoutsPage() {
   const nav = useNavigate();
-  const { profile } = useProfile();
+  const { profile, loading } = useProfile();
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const isProfileComplete = !!profile?.name;
 
@@ -150,6 +151,8 @@ export default function WorkoutsPage() {
             Gerar Treino Personalizado
           </button>
         </motion.div>
+      ) : loading ? (
+        <WorkoutSkeleton />
       ) : (
         <div className="space-y-4">
           {/* Explanation */}

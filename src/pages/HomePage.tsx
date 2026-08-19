@@ -20,13 +20,16 @@ const quotes = [
   "Seu único limite é você mesmo.",
 ];
 
+import { HomePageSkeleton } from "@/components/PremiumSkeletons";
+
 export default function HomePage() {
-  const { profile, loading } = useProfile();
-  const { stats, update } = useDailyStats();
+  const { profile, loading: profileLoading } = useProfile();
+  const { stats, update, loading: statsLoading } = useDailyStats();
   const { user } = useAuth();
   const navigate = useNavigate();
   const quote = quotes[Math.floor(Math.random() * quotes.length)];
   const [unread, setUnread] = useState(0);
+  const loading = profileLoading || statsLoading;
 
   // First-time users: send to onboarding wizard
   useEffect(() => {
@@ -47,6 +50,8 @@ export default function HomePage() {
   }, [user?.id]);
 
   const isProfileComplete = !!profile?.name && (profile as any)?.onboarded;
+
+  if (loading) return <HomePageSkeleton />;
 
   return (
     <div className="min-h-screen pb-24 px-4 pt-6 max-w-lg mx-auto">
@@ -126,7 +131,7 @@ export default function HomePage() {
 
       <div className="flex items-end justify-between mb-4 px-1">
         <h2 className="text-xl font-black font-display tracking-tight">Atividade</h2>
-        <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest bg-secondary/50 px-2 py-0.5 rounded-full">Edição habilitada</span>
+        <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest bg-secondary/50 px-2 py-0.5 rounded-full border border-white/5">Auto-save on</span>
       </div>
       <div className="grid grid-cols-2 gap-3 mb-6">
         <EditableStatCard
