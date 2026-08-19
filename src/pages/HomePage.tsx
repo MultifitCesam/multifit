@@ -182,27 +182,39 @@ export default function HomePage() {
         ))}
       </div>
 
-      <h2 className="text-lg font-bold font-display mb-3">Esta Semana</h2>
-      <div className="glass rounded-2xl p-4 mb-4">
-        <div className="flex justify-between mb-3">
+      <h2 className="text-lg font-bold font-display mb-3 px-1">Esta Semana</h2>
+      <div className="glass-premium rounded-3xl p-6 mb-10 stagger-load stagger-5">
+        <div className="flex justify-between items-end mb-6">
           {["S", "T", "Q", "Q", "S", "S", "D"].map((d, i) => (
-            <div key={i} className="flex flex-col items-center gap-1.5">
-              <span className="text-[10px] text-muted-foreground">{d}</span>
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+            <div key={i} className="flex flex-col items-center gap-2">
+              <span className="text-[10px] text-muted-foreground font-bold">{d}</span>
+              <motion.div
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                className={`w-9 h-9 rounded-2xl flex items-center justify-center text-xs font-bold transition-all ${
                   i < 5
-                    ? "bg-gradient-primary text-primary-foreground"
+                    ? "bg-gradient-primary text-primary-foreground shadow-neon scale-110"
                     : i === 5
-                    ? "border-2 border-primary/50 text-primary"
-                    : "bg-secondary text-muted-foreground"
+                    ? "border-2 border-primary/40 text-primary"
+                    : "bg-secondary/50 text-muted-foreground"
                 }`}
               >
                 {i < 5 ? "✓" : ""}
-              </div>
+              </motion.div>
             </div>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground text-center">5 de 7 treinos completados</p>
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground font-medium">Progresso semanal</span>
+          <span className="text-primary font-bold">5 de 7 treinos</span>
+        </div>
+        <div className="mt-2 h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+          <motion.div 
+            initial={{ width: 0 }}
+            animate={{ width: "71%" }}
+            className="h-full bg-gradient-primary"
+          />
+        </div>
       </div>
 
       <BottomNav />
