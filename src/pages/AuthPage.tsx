@@ -112,22 +112,23 @@ export default function AuthPage() {
               className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_15px_rgba(132,204,22,0.5)] rounded-full"
             />
           </motion.div>
-          <h2 className="text-4xl font-black font-display tracking-tighter mt-6 premium-gradient-text">
+          <h2 className="text-3xl font-medium text-foreground mt-8">
             MultiFit
           </h2>
-          <p className="text-[10px] text-muted-foreground mt-2 font-bold tracking-[0.2em] uppercase opacity-70">
-            {mode === "login" ? "BEM-VINDO DE VOLTA" : "COMECE SUA EVOLUÇÃO"}
+          <p className="text-[12px] text-muted-foreground mt-2 font-medium">
+            {mode === "login" ? "Bem-vindo de volta" : "Comece sua evolução"}
           </p>
         </div>
 
-        <div className="glass-premium rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+        <div className="bg-secondary border border-border/50 rounded-[24px] p-8 relative overflow-hidden">
+
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-accent/10 rounded-full blur-3xl" />
           
           <form onSubmit={handleSubmit} className="space-y-5">
             {mode === "signup" && (
-              <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
-                <label className="text-[10px] font-black text-muted-foreground mb-1.5 block uppercase tracking-wider ml-1">Nome</label>
+              <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}>
+                <label className="text-[11px] font-medium text-muted-foreground uppercase mb-1.5 px-1 block tracking-tight">Nome</label>
                 <div className="relative group">
                   <UserIcon size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
                   <input
@@ -135,14 +136,14 @@ export default function AuthPage() {
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="Seu nome"
-                    className="w-full bg-secondary/30 border border-white/5 rounded-2xl pl-11 pr-4 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/40"
+                    className="w-full bg-background border border-border/50 rounded-[14px] pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-muted-foreground/40"
                     required
                   />
                 </div>
               </motion.div>
             )}
             <div>
-              <label className="text-[10px] font-black text-muted-foreground mb-1.5 block uppercase tracking-wider ml-1">Email</label>
+              <label className="text-[11px] font-medium text-muted-foreground uppercase mb-1.5 px-1 block tracking-tight">Email</label>
               <div className="relative group">
                 <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 <input
@@ -150,13 +151,13 @@ export default function AuthPage() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="voce@email.com"
-                  className="w-full bg-secondary/30 border border-white/5 rounded-2xl pl-11 pr-4 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/40"
+                  className="w-full bg-background border border-border/50 rounded-[14px] pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-muted-foreground/40"
                   required
                 />
               </div>
             </div>
             <div>
-              <label className="text-[10px] font-black text-muted-foreground mb-1.5 block uppercase tracking-wider ml-1">Senha</label>
+              <label className="text-[11px] font-medium text-muted-foreground uppercase mb-1.5 px-1 block tracking-tight">Senha</label>
               <div className="relative group">
                 <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 <input
@@ -164,73 +165,59 @@ export default function AuthPage() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Mínimo 6 caracteres"
-                  className="w-full bg-secondary/30 border border-white/5 rounded-2xl pl-11 pr-4 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/40"
-                  required
-                  minLength={6}
-                />
-              </div>
-            </div>
-            <div>
-              <label className="text-xs font-bold text-muted-foreground mb-1.5 block">Senha</label>
-              <div className="relative">
-                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
-                  className="w-full bg-secondary/50 border border-white/5 rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                  className="w-full bg-background border border-border/50 rounded-[14px] pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-muted-foreground/40"
                   required
                   minLength={6}
                 />
               </div>
             </div>
 
-            <label className="flex items-center gap-3 text-xs text-muted-foreground cursor-pointer select-none pt-2 group">
-              <div className="relative flex items-center">
-                <input
-                  type="checkbox"
-                  checked={keepLogged}
-                  onChange={(e) => setKeepLogged(e.target.checked)}
-                  className="w-5 h-5 rounded-lg border-white/10 bg-secondary/50 accent-primary cursor-pointer transition-all"
-                />
-              </div>
-              <span className="group-hover:text-foreground transition-colors">Manter conectado neste dispositivo</span>
+
+            <label className="flex items-center gap-3 text-[13px] text-muted-foreground cursor-pointer select-none pt-2 group">
+              <input
+                type="checkbox"
+                checked={keepLogged}
+                onChange={(e) => setKeepLogged(e.target.checked)}
+                className="w-4 h-4 rounded border-border/50 bg-background accent-primary cursor-pointer transition-all"
+              />
+              <span className="group-hover:text-foreground transition-colors">Manter conectado</span>
             </label>
+
 
             <motion.button
               whileTap={{ scale: 0.98 }}
-              whileHover={{ scale: 1.01 }}
               type="submit"
               disabled={busy}
-              className="w-full bg-gradient-primary text-primary-foreground font-black py-4 rounded-xl shadow-neon disabled:opacity-60 flex items-center justify-center gap-2 mt-4 tracking-tight"
+              className="w-full bg-primary text-primary-foreground font-semibold py-4 rounded-[14px] disabled:opacity-60 flex items-center justify-center gap-2 mt-4"
             >
-              {busy ? <Loader2 size={20} className="animate-spin" /> : null}
-              {mode === "login" ? "ENTRAR AGORA" : "CRIAR MINHA CONTA"}
+              {busy ? <Loader2 size={18} className="animate-spin" /> : null}
+              {mode === "login" ? "Entrar agora" : "Criar minha conta"}
             </motion.button>
+
           </form>
 
-          <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-muted-foreground">ou</span>
-            <div className="flex-1 h-px bg-border" />
+          <div className="flex items-center gap-3 my-6">
+            <div className="flex-1 h-px bg-border/50" />
+            <span className="text-[12px] text-muted-foreground uppercase font-medium tracking-widest">ou</span>
+            <div className="flex-1 h-px bg-border/50" />
           </div>
 
+
           <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handleGoogle}
             disabled={busy}
-            className="w-full bg-secondary/50 hover:bg-secondary/80 text-foreground font-semibold py-3.5 rounded-xl border border-white/5 flex items-center justify-center gap-3 transition-all disabled:opacity-60"
+            className="w-full bg-background border border-border/50 text-foreground font-medium py-3.5 rounded-[14px] flex items-center justify-center gap-3 transition-all disabled:opacity-60"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24">
+            <svg width="18" height="18" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
               <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.83z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
-            Continuar com Google
+            Google
           </motion.button>
+
 
           <button
             onClick={() => setMode(mode === "login" ? "signup" : "login")}

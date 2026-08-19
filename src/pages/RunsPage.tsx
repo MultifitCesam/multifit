@@ -325,7 +325,7 @@ export default function RunsPage() {
     const calories = liveCalories();
 
     return (
-      <div className="fixed inset-0 z-40 bg-background flex flex-col safe-area-inset">
+      <div className="fixed inset-0 z-[1000] bg-background flex flex-col safe-area-inset">
         <div className="flex-1 relative">
           {pos && (
             <MapContainer center={pos} zoom={17} className="w-full h-full" zoomControl={false}>
@@ -351,16 +351,16 @@ export default function RunsPage() {
           )}
 
           {/* Status bar */}
-          <div className="absolute top-4 left-4 right-4 z-[400] glass rounded-2xl px-4 py-3 flex items-center justify-between shadow-neon">
+          <div className="absolute top-6 left-4 right-4 z-[400] bg-secondary border border-border/50 rounded-2xl px-4 py-3 flex items-center justify-between shadow-2xl">
             <div className="flex items-center gap-3">
-              <span className={`w-2.5 h-2.5 rounded-full ${paused ? "bg-yellow-500" : "bg-primary animate-pulse"}`} />
-              <span className="text-xs font-bold">{paused ? "Pausado" : "Gravando"}</span>
+              <span className={`w-2 h-2 rounded-full ${paused ? "bg-amber-500" : "bg-primary animate-pulse"}`} />
+              <span className="text-[12px] font-medium text-foreground">{paused ? "Pausado" : "Gravando"}</span>
             </div>
             <div className="flex items-center gap-3">
               <GPSSignalIndicator signal={gpsSignal} accuracy={gpsAccuracy} />
-              <span className="text-xs text-muted-foreground">{path.length} pts</span>
             </div>
           </div>
+
 
           {/* Live speed indicator */}
           <AnimatePresence>
@@ -369,46 +369,48 @@ export default function RunsPage() {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className="absolute top-20 right-4 z-[400] glass rounded-xl px-3 py-2"
+                className="absolute top-24 right-4 z-[400] bg-secondary border border-border/50 rounded-xl px-3 py-2"
               >
                 <div className="flex items-center gap-2">
                   <Zap size={14} className="text-primary" />
-                  <span className="text-sm font-bold">{currentSpeed.toFixed(1)} km/h</span>
+                  <span className="text-[13px] font-semibold text-foreground">{currentSpeed.toFixed(1)} km/h</span>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        <div className="glass border-t border-border/50 px-5 py-5 space-y-4">
-          <div className="grid grid-cols-4 gap-3 text-center">
-            <Stat label="Distância" value={formatDistance(distance)} unit="km" highlight />
+        <div className="bg-secondary border-t border-border/50 px-6 py-6 space-y-6">
+          <div className="grid grid-cols-4 gap-4">
+            <Stat label="Distância" value={formatDistance(distance)} unit="km" />
             <Stat label="Tempo" value={formatTime(elapsed)} />
             <Stat label="Pace" value={formatPace(pace)} unit="/km" />
             <Stat label="Calorias" value={String(calories)} unit="kcal" />
           </div>
 
+
           <div className="flex gap-3">
             <button
               onClick={cancelTracking}
-              className="flex-1 bg-secondary text-foreground font-bold py-3.5 rounded-xl active:scale-95 transition-transform"
+              className="flex-1 bg-background border border-border/50 text-foreground font-medium py-3.5 rounded-xl active:scale-95 transition-all"
             >
-              Cancelar
+              Descartar
             </button>
             <button
               onClick={() => setPaused((p) => !p)}
-              className="flex-1 bg-secondary text-foreground font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-transform"
+              className="flex-1 bg-background border border-border/50 text-foreground font-medium py-3.5 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all"
             >
               {paused ? <Play size={16} /> : <Pause size={16} />}
-              {paused ? "Continuar" : "Pausar"}
+              {paused ? "Retomar" : "Pausar"}
             </button>
             <button
               onClick={finishTracking}
-              className="flex-1 bg-gradient-primary text-primary-foreground font-bold py-3.5 rounded-xl shadow-neon flex items-center justify-center gap-2 active:scale-95 transition-transform"
+              className="flex-1 bg-primary text-primary-foreground font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-all"
             >
               <Square size={14} /> Finalizar
             </button>
           </div>
+
         </div>
       </div>
     );
@@ -421,23 +423,24 @@ export default function RunsPage() {
     const avgSpeed = selected.duration_s > 0 ? km / (selected.duration_s / 3600) : 0;
 
     return (
-      <div className="min-h-screen pb-24 max-w-lg mx-auto">
-        <div className="px-4 pt-6 flex items-center gap-3 mb-4">
-          <button onClick={() => { setSelected(null); setView("home"); }} className="p-2 rounded-xl bg-secondary active:scale-95 transition-transform">
-            <ChevronLeft size={18} />
+      <div className="min-h-screen pb-24 max-w-lg mx-auto bg-background">
+        <div className="px-5 pt-8 flex items-center gap-3 mb-6">
+          <button onClick={() => { setSelected(null); setView("home"); }} className="p-2.5 rounded-xl bg-secondary border border-border/50 active:scale-95 transition-all">
+            <ChevronLeft size={20} />
           </button>
           <div className="flex-1">
-            <h1 className="font-bold font-display">{selected.title}</h1>
-            <p className="text-[11px] text-muted-foreground">
+            <h1 className="text-base font-medium text-foreground">{selected.title}</h1>
+            <p className="text-[12px] text-muted-foreground font-medium">
               {formatDistanceToNow(new Date(selected.created_at), { addSuffix: true, locale: ptBR })}
             </p>
           </div>
-          <button onClick={() => deleteRun(selected.id)} className="p-2 text-muted-foreground hover:text-destructive active:scale-95 transition-transform">
-            <Trash2 size={16} />
+          <button onClick={() => deleteRun(selected.id)} className="p-2.5 text-muted-foreground hover:text-destructive active:scale-95 transition-all">
+            <Trash2 size={18} />
           </button>
         </div>
 
-        <div className="h-72 mx-4 rounded-2xl overflow-hidden glow-border">
+
+        <div className="h-72 mx-5 rounded-[24px] overflow-hidden border border-border/50">
           {polyPoints.length > 0 ? (
             <MapContainer center={polyPoints[0]} zoom={15} className="w-full h-full" scrollWheelZoom={false}>
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
@@ -453,24 +456,26 @@ export default function RunsPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-3 px-4 mt-4">
+        <div className="grid grid-cols-2 gap-3 px-5 mt-6">
           <DetailStat icon={MapPin} label="Distância" value={`${km.toFixed(2)} km`} />
           <DetailStat icon={Clock} label="Tempo" value={formatTime(selected.duration_s)} />
           <DetailStat icon={Footprints} label="Pace médio" value={`${formatPace(selected.avg_pace_s_per_km || 0)} /km`} />
           <DetailStat icon={Flame} label="Calorias" value={`${selected.calories ?? 0} kcal`} />
           <DetailStat icon={Zap} label="Velocidade média" value={`${avgSpeed.toFixed(1)} km/h`} />
-          <DetailStat icon={TrendingUp} label="Vel. máxima" value={`${selected.max_speed ?? 0} km/h`} />
+          <DetailStat icon={Zap} label="Vel. máxima" value={`${selected.max_speed ?? 0} km/h`} />
         </div>
 
+
         {(selected.elevation_gain ?? 0) > 0 && (
-          <div className="px-4 mt-3">
+          <div className="px-5 mt-3">
             <DetailStat 
               icon={Mountain} 
-              label="Elevação" 
+              label="Ganho de Elevação" 
               value={`+${selected.elevation_gain ?? 0} m`} 
             />
           </div>
         )}
+
 
         <BottomNav />
       </div>
@@ -483,60 +488,64 @@ export default function RunsPage() {
   const totalCalories = runs.reduce((s, r) => s + (r.calories ?? 0), 0);
 
   return (
-    <div className="min-h-screen pb-28 px-4 pt-6 max-w-lg mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-11 h-11 rounded-xl bg-gradient-primary flex items-center justify-center shadow-neon">
-          <Footprints size={22} className="text-primary-foreground" />
+    <div className="min-h-screen pb-28 px-5 pt-8 max-w-lg mx-auto bg-background">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-10 h-10 rounded-xl bg-[hsl(var(--bg-success))] flex items-center justify-center">
+          <Footprints size={20} className="text-primary" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold font-display">
-            <span className="text-gradient">Corridas</span>
-          </h1>
-          <p className="text-xs text-muted-foreground">Rastreie suas rotas com GPS</p>
+          <h1 className="text-xl font-medium text-foreground">Corridas</h1>
+          <p className="text-[12px] text-muted-foreground font-medium tracking-tight">Rastreie suas rotas com GPS</p>
         </div>
       </div>
 
+
       {/* Quick stats */}
-      <div className="grid grid-cols-4 gap-2 mb-5">
+      <div className="grid grid-cols-4 gap-3 mb-8">
         <Stat label="Total" value={totalKm.toFixed(1)} unit="km" />
         <Stat label="Sessões" value={String(runs.length)} />
         <Stat label="Tempo" value={formatTime(totalTime)} />
-        <Stat label="Calorias" value={String(totalCalories)} unit="" />
+        <Stat label="Calorias" value={String(totalCalories)} />
       </div>
+
 
 
 
 
       {/* Map preview + start */}
-      <div className="relative rounded-2xl overflow-hidden glow-border mb-5 h-56">
+      <div className="relative rounded-[24px] overflow-hidden border border-border/50 mb-8 h-56">
         {pos ? (
           <MapContainer center={pos} zoom={14} className="w-full h-full" scrollWheelZoom={false} dragging={false} zoomControl={false}>
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OSM" />
             <Marker position={pos} />
           </MapContainer>
         ) : (
-          <div className="w-full h-full bg-secondary/40 flex items-center justify-center text-sm text-muted-foreground">
-            <Loader2 size={20} className="animate-spin mr-2" /> Localizando...
+          <div className="w-full h-full bg-secondary flex items-center justify-center text-[12px] text-muted-foreground">
+            <Loader2 size={16} className="animate-spin mr-2" /> Localizando...
           </div>
         )}
+
         <button
           onClick={startTracking}
-          className="absolute inset-x-4 bottom-4 z-[400] bg-gradient-primary text-primary-foreground font-bold py-3.5 rounded-xl shadow-neon flex items-center justify-center gap-2 active:scale-95 transition-transform"
+          className="absolute inset-x-4 bottom-4 z-[400] bg-primary text-primary-foreground font-semibold py-4 rounded-xl shadow-2xl flex items-center justify-center gap-2.5 active:scale-95 transition-all"
         >
-          <Play size={16} /> Iniciar corrida
+          <Play size={16} fill="currentColor" /> Iniciar corrida
         </button>
+
       </div>
 
-      <h2 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
-        Histórico
+      <h2 className="text-[11px] font-medium uppercase tracking-tight text-muted-foreground mb-4 px-1">
+        Histórico recente
       </h2>
+
 
       {loading ? (
         <div className="flex justify-center py-10"><Loader2 className="animate-spin text-primary" /></div>
       ) : runs.length === 0 ? (
-        <div className="glass rounded-2xl p-8 text-center text-sm text-muted-foreground">
+        <div className="bg-secondary border border-border/50 rounded-[20px] p-8 text-center text-[13px] text-muted-foreground">
           Nenhuma corrida ainda. Comece a primeira!
         </div>
+
       ) : (
         <div className="space-y-3">
           {runs.map((r) => {
@@ -546,20 +555,23 @@ export default function RunsPage() {
                 key={r.id}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => { setSelected(r); setView("detail"); }}
-                className="w-full glass rounded-2xl p-4 flex items-center gap-3 text-left"
+                className="w-full bg-secondary border border-border/50 rounded-[20px] p-4 flex items-center gap-3 text-left active:scale-[0.98] transition-all"
               >
-                <div className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-background border border-border/50 flex items-center justify-center">
                   <Footprints size={18} className="text-primary" />
                 </div>
+
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm truncate">{r.title}</p>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-[13px] font-medium text-foreground truncate">{r.title}</p>
+                  <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
                     {formatDistanceToNow(new Date(r.created_at), { addSuffix: true, locale: ptBR })}
                   </p>
+
                 </div>
                 <div className="text-right">
-                  <p className="font-bold font-display text-primary">{rkm.toFixed(2)} km</p>
-                  <p className="text-[10px] text-muted-foreground">{r.calories ?? 0} kcal</p>
+                  <p className="text-[13px] font-semibold text-primary">{rkm.toFixed(2)} km</p>
+                  <p className="text-[10px] text-muted-foreground font-medium">{r.calories ?? 0} kcal</p>
+
                 </div>
               </motion.button>
             );
@@ -586,13 +598,14 @@ function Stat({ label, value, unit, highlight }: { label: string; value: string;
 
 function DetailStat({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="glass rounded-2xl p-4">
-      <Icon size={16} className="text-primary mb-2" />
-      <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{label}</p>
-      <p className="font-bold font-display text-lg">{value}</p>
+    <div className="bg-secondary border border-border/50 rounded-[18px] p-4">
+      <Icon size={18} className="text-primary mb-3" />
+      <p className="text-[10px] text-muted-foreground uppercase font-medium tracking-tight mb-1">{label}</p>
+      <p className="text-base font-semibold text-foreground">{value}</p>
     </div>
   );
 }
+
 
 function GPSSignalIndicator({ signal, accuracy }: { signal: string; accuracy: number | null }) {
   const colors = {
@@ -665,20 +678,21 @@ function PWAInstallHint() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass rounded-2xl p-4 mb-4 flex items-start gap-3"
+      className="bg-secondary border border-border/50 rounded-[20px] p-5 mb-6 flex items-start gap-4"
     >
-      <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+      <div className="w-10 h-10 rounded-xl bg-background border border-border/50 flex items-center justify-center shrink-0">
         <Smartphone size={18} className="text-primary" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-bold text-sm">Instale o app</p>
-        <p className="text-[11px] text-muted-foreground">
-          Adicione o MultiFit na tela inicial para melhor experiência de rastreamento GPS.
+        <p className="text-sm font-medium text-foreground">Instale o MultiFit</p>
+        <p className="text-[12px] text-muted-foreground mt-0.5 leading-relaxed">
+          Adicione à tela inicial para ter a melhor experiência de rastreamento e performance.
         </p>
       </div>
-      <button onClick={dismiss} className="text-xs text-muted-foreground hover:text-foreground">
-        Fechar
+      <button onClick={dismiss} className="text-[11px] text-muted-foreground hover:text-foreground font-medium pt-1">
+        Pular
       </button>
     </motion.div>
   );
+
 }

@@ -1,232 +1,362 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowLeft, Check, Clock, Minus, Plus, StopCircle } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Play, 
+  CheckCircle2, 
+  ChevronRight, 
+  ChevronLeft, 
+  Timer, 
+  Dumbbell, 
+  ArrowLeft,
+  Timer as TimerIcon
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
-import type { Exercise, UserProfile } from "@/lib/workout-generator";
-import { generateWorkoutPlan } from "@/lib/workout-generator";
-import { fetchRecentSets, suggestNext } from "@/lib/progression";
+import { generateWorkoutPlan, type WorkoutDay, type UserProfile } from "@/lib/workout-generator";
 import ExerciseVideo from "@/components/ExerciseVideo";
 import { toast } from "@/hooks/use-toast";
 
-interface SetRow {
-  set_index: number;
-  reps: number | null;
-  weight_kg: number | null;
-  rpe: number | null;
-  done: boolean;
-}
-
-interface ExState {
-  exercise: Exercise;
-  sets: SetRow[];
-  suggestion: string;
-}
-
-function useRestTimer() {
-  const [seconds, setSeconds] = useState(0);
-  const [active, setActive] = useState(false);
-  useEffect(() => {
-    if (!active) return;
-    const id = setInterval(() => setSeconds((s) => (s > 0 ? s - 1 : (setActive(false), 0))), 1000);
-    return () => clearInterval(id);
-  }, [active]);
-  return {
-    seconds, active,
-    start: (s: number) => { setSeconds(s); setActive(true); },
-    stop: () => { setActive(false); setSeconds(0); },
-  };
-}
-
 export default function WorkoutSessionPage() {
-  const nav = useNavigate();
-  const [params] = useSearchParams();
+  const [searchParams] = useSearchParams();
+  const dayIndex = parseInt(searchParams.get("day") || "0");
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { profile } = useProfile();
-  const dayIndex = Number(params.get("day") ?? "0");
-
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [startedAt, setStartedAt] = useState<Date | null>(null);
-  const [exState, setExState] = useState<ExState[]>([]);
-  const [saving, setSaving] = useState(false);
-  const rest = useRestTimer();
-
-  const day = useMemo(() => {
-    if (!profile) return null;
-    const mapped: UserProfile = {
-      name: profile.name, gender: (profile as any).gender ?? null,
-      age: profile.age, weight: Number(profile.weight), height: Number(profile.height),
-      level: profile.level, goal: profile.goal, bodyType: profile.body_type,
-      sleepHours: Number(profile.sleep_hours), sleepQuality: profile.sleep_quality,
-      weeklyFrequency: profile.weekly_frequency, trainingTime: profile.training_time,
-      focusAreas: (profile as any).focus_areas ?? null, healthConditions: (profile as any).health_conditions ?? null,
-    };
-    return generateWorkoutPlan(mapped).weeklyPlan[dayIndex];
-  }, [profile, dayIndex]);
+  
+  const [sessionStartedAt] = useState(new Date());
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [workoutDay, setWorkoutDay] = useState<WorkoutDay | null>(null);
+  const [logs, setLogs] = useState<any[]>([]);
+  const [isFinishing, setIsFinishing] = useState(false);
+  
+  // Timer state
+  const [restTime, setRestTime] = useState(0);
+  const [isResting, setIsResting] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (!day || !user || day.type === "descanso") return;
-    (async () => {
-      // Initialize per-exercise state with progression suggestion
-      const states: ExState[] = [];
-      for (const ex of day.exercises) {
-        const recent = await fetchRecentSets(user.id, ex.name);
-        const s = suggestNext(ex, recent);
-        const sets: SetRow[] = Array.from({ length: ex.sets }, (_, i) => ({
-          set_index: i + 1,
-          reps: null,
-          weight_kg: s.suggestedWeightKg,
-          rpe: null,
+    if (!profile) return;
+    
+    const mapped: UserProfile = {
+      name: profile.name,
+      gender: profile.gender as any,
+      age: profile.age,
+      weight: Number(profile.weight),
+      height: Number(profile.height),
+      level: profile.level as any,
+      goal: profile.goal as any,
+      bodyType: profile.body_type as any,
+      sleepHours: Number(profile.sleep_hours),
+      sleepQuality: profile.sleep_quality as any,
+      weeklyFrequency: profile.weekly_frequency,
+      trainingTime: profile.training_time as any,
+      focusAreas: profile.focus_areas as any,
+      healthConditions: profile.health_conditions as any,
+    };
+    
+    const plan = generateWorkoutPlan(mapped);
+    const day = plan.weeklyPlan[dayIndex];
+    
+    if (day && day.type !== 'descanso') {
+      setWorkoutDay(day);
+      const initialLogs = day.exercises.flatMap((ex, exIdx) => 
+        Array.from({ length: ex.sets }).map((_, setIdx) => ({
+          exerciseIndex: exIdx,
+          setIndex: setIdx,
+          reps: parseInt(ex.reps.split('-')[0]) || 10,
+          weight: 0,
           done: false,
-        }));
-        states.push({ exercise: ex, sets, suggestion: s.note });
-      }
-      setExState(states);
+          rpe: 7
+        }))
+      );
+      setLogs(initialLogs);
+    } else {
+      navigate('/workouts');
+    }
+  }, [profile, dayIndex, navigate]);
 
-      // Create session
-      const { data, error } = await (supabase as any)
-        .from("workout_sessions")
-        .insert({ user_id: user.id, day_label: day.day, focus: day.focus, workout_type: day.type })
-        .select("id, started_at")
+  useEffect(() => {
+    if (isResting && restTime > 0) {
+      timerRef.current = setInterval(() => {
+        setRestTime((prev) => {
+          if (prev <= 1) {
+            setIsResting(false);
+            if (timerRef.current) clearInterval(timerRef.current);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [isResting, restTime]);
+
+  const startRest = (seconds: number) => {
+    setRestTime(seconds);
+    setIsResting(true);
+  };
+
+  const updateLog = (exIdx: number, setIdx: number, field: string, value: any) => {
+    setLogs(prev => prev.map(log => 
+      (log.exerciseIndex === exIdx && log.setIndex === setIdx) 
+        ? { ...log, [field]: value } 
+        : log
+    ));
+  };
+
+  const toggleDone = (exIdx: number, setIdx: number) => {
+    const currentLog = logs.find(l => l.exerciseIndex === exIdx && l.setIndex === setIdx);
+    const newDone = !currentLog?.done;
+    updateLog(exIdx, setIdx, 'done', newDone);
+    
+    if (newDone && workoutDay) {
+      const restSeconds = parseInt(workoutDay.exercises[exIdx].rest) * 60 || 60;
+      startRest(restSeconds);
+    }
+  };
+
+  const finishWorkout = async () => {
+    if (!user || !workoutDay) return;
+    setIsFinishing(true);
+    
+    try {
+      const durationSeconds = Math.round((new Date().getTime() - sessionStartedAt.getTime()) / 1000);
+      
+      const { data: session, error: sError } = await supabase
+        .from('workout_sessions')
+        .insert({
+          user_id: user.id,
+          focus: workoutDay.focus,
+          day_label: workoutDay.day,
+          started_at: sessionStartedAt.toISOString(),
+          finished_at: new Date().toISOString(),
+          duration_seconds: durationSeconds
+        })
+        .select()
         .single();
-      if (error) { toast({ title: "Erro ao iniciar sessão", description: error.message, variant: "destructive" }); return; }
-      setSessionId(data.id);
-      setStartedAt(new Date(data.started_at));
-    })();
-  }, [day, user]);
 
-  if (!profile || !day) return <div className="p-6">Carregando...</div>;
-  if (day.type === "descanso") {
-    return (
-      <div className="p-6 text-center">
-        <p className="text-lg font-bold mb-2">Dia de descanso 😴</p>
-        <button onClick={() => nav(-1)} className="text-primary underline">Voltar</button>
-      </div>
-    );
-  }
+      if (sError) throw sError;
 
-  const updateSet = (eIdx: number, sIdx: number, patch: Partial<SetRow>) => {
-    setExState((prev) => prev.map((e, i) => i !== eIdx ? e : {
-      ...e, sets: e.sets.map((s, j) => j !== sIdx ? s : { ...s, ...patch })
-    }));
+      const exerciseLogs = logs.map(log => ({
+        user_id: user.id,
+        session_id: session.id,
+        exercise_name: workoutDay.exercises[log.exerciseIndex].name,
+        muscle_group: workoutDay.exercises[log.exerciseIndex].muscleGroup,
+        set_index: log.setIndex,
+        reps: log.reps,
+        weight_kg: log.weight,
+        rpe: log.rpe,
+        done: log.done
+      }));
+
+      const { error: lError } = await supabase
+        .from('exercise_logs')
+        .insert(exerciseLogs);
+
+      if (lError) throw lError;
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      const { data: currentStats } = await supabase
+        .from('daily_stats')
+        .select('active_minutes')
+        .eq('user_id', user.id)
+        .eq('day', todayStr)
+        .maybeSingle();
+      
+      await supabase
+        .from('daily_stats')
+        .upsert({
+          user_id: user.id,
+          day: todayStr,
+          active_minutes: (currentStats?.active_minutes || 0) + Math.round(durationSeconds / 60)
+        });
+
+      toast({ title: "Treino Concluído! 🏆", description: "Sua evolução foi registrada." });
+      navigate('/workouts');
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Erro ao salvar", description: "Não conseguimos registrar seu treino.", variant: "destructive" });
+    } finally {
+      setIsFinishing(false);
+    }
   };
 
-  const markDone = async (eIdx: number, sIdx: number) => {
-    const ex = exState[eIdx];
-    const set = ex.sets[sIdx];
-    updateSet(eIdx, sIdx, { done: true });
-    if (!sessionId || !user) return;
-    const restSec = parseInt(ex.exercise.rest) || 60;
-    await (supabase as any).from("exercise_logs").insert({
-      session_id: sessionId, user_id: user.id,
-      exercise_name: ex.exercise.name, muscle_group: ex.exercise.muscleGroup,
-      set_index: set.set_index, target_reps: ex.exercise.reps,
-      reps: set.reps, weight_kg: set.weight_kg, rpe: set.rpe,
-      rest_seconds: restSec, done: true,
-    });
-    rest.start(restSec);
-  };
+  if (!workoutDay) return null;
 
-  const finish = async () => {
-    if (!sessionId || !startedAt) return;
-    setSaving(true);
-    const duration = Math.round((Date.now() - startedAt.getTime()) / 1000);
-    const volume = exState.reduce((total, e) => total + e.sets.reduce((acc, s) => acc + (s.done && s.reps && s.weight_kg ? s.reps * s.weight_kg : 0), 0), 0);
-    await (supabase as any).from("workout_sessions").update({
-      finished_at: new Date().toISOString(),
-      duration_seconds: duration,
-      total_volume_kg: volume,
-    }).eq("id", sessionId);
-    toast({ title: "Treino concluído! 💪", description: `${Math.round(duration/60)} min • ${volume.toFixed(0)} kg de volume` });
-    nav("/workouts");
-  };
+  const currentExercise = workoutDay.exercises[currentExerciseIndex];
+  const exerciseLogs = logs.filter(l => l.exerciseIndex === currentExerciseIndex);
+  const totalExercises = workoutDay.exercises.length;
 
   return (
-    <div className="min-h-screen pb-32 px-4 pt-6 max-w-lg mx-auto">
-      <div className="flex items-center gap-3 mb-4">
-        <button onClick={() => nav(-1)} className="p-2 rounded-xl bg-secondary"><ArrowLeft size={18} /></button>
-        <div>
-          <h1 className="text-xl font-bold font-display">{day.day}</h1>
-          <p className="text-xs text-muted-foreground">{day.focus}</p>
+    <div className="min-h-screen bg-background pb-20">
+      <div className="sticky top-0 z-40 bg-background border-b border-border/50 px-5 py-4 flex items-center justify-between">
+        <button onClick={() => navigate('/workouts')} className="p-2 -ml-2 rounded-xl text-muted-foreground">
+          <ArrowLeft size={20} />
+        </button>
+        <div className="text-center">
+          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-tight leading-tight">{workoutDay.focus}</p>
+          <h1 className="text-sm font-medium text-foreground">Exercício {currentExerciseIndex + 1} de {totalExercises}</h1>
         </div>
+        <div className="w-10" />
       </div>
 
-      {rest.active && (
-        <motion.div initial={{ y: -20 }} animate={{ y: 0 }} className="glass glow-border rounded-2xl p-3 mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-primary"><Clock size={18} /><span className="font-bold">Descanso</span></div>
-          <span className="text-2xl font-display font-bold">{rest.seconds}s</span>
-          <button onClick={rest.stop} className="text-xs text-muted-foreground underline">pular</button>
-        </motion.div>
-      )}
+      <div className="max-w-lg mx-auto p-5">
+        <div className="w-full h-1 bg-secondary rounded-full mb-8 overflow-hidden">
+          <motion.div 
+            className="h-full bg-primary"
+            initial={{ width: 0 }}
+            animate={{ width: `${((currentExerciseIndex + 1) / totalExercises) * 100}%` }}
+          />
+        </div>
 
-      <div className="space-y-4">
-        {exState.map((e, eIdx) => (
-          <div key={eIdx} className="glass rounded-2xl p-4">
-            <div className="flex items-start justify-between mb-2">
-              <div>
-                <p className="font-bold text-sm">{e.exercise.name}</p>
-                <p className="text-[10px] text-muted-foreground">{e.exercise.muscleGroup} • alvo {e.exercise.reps}</p>
-              </div>
-              <ExerciseVideo exerciseName={e.exercise.name} />
+        <motion.div 
+          key={currentExercise.name}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-secondary border border-border/50 rounded-[20px] p-6 mb-6"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <span className="text-[11px] text-primary font-medium uppercase mb-2 inline-block">
+                {currentExercise.muscleGroup}
+              </span>
+              <h2 className="text-xl font-medium text-foreground">{currentExercise.name}</h2>
             </div>
-            <p className="text-[11px] text-primary/80 mb-3">💡 {e.suggestion}</p>
-
-            <div className="space-y-2">
-              {e.sets.map((s, sIdx) => (
-                <div key={sIdx} className={`flex items-center gap-2 rounded-xl p-2 ${s.done ? "bg-primary/10" : "bg-secondary/50"}`}>
-                  <span className="w-6 text-center text-xs font-bold">{s.set_index}</span>
-                  <div className="flex-1 grid grid-cols-3 gap-1.5">
-                    <input
-                      type="number" inputMode="decimal" placeholder="kg"
-                      value={s.weight_kg ?? ""}
-                      onChange={(ev) => updateSet(eIdx, sIdx, { weight_kg: ev.target.value ? Number(ev.target.value) : null })}
-                      className="bg-background/50 rounded px-2 py-1 text-sm w-full"
-                      disabled={s.done}
-                    />
-                    <input
-                      type="number" inputMode="numeric" placeholder="reps"
-                      value={s.reps ?? ""}
-                      onChange={(ev) => updateSet(eIdx, sIdx, { reps: ev.target.value ? Number(ev.target.value) : null })}
-                      className="bg-background/50 rounded px-2 py-1 text-sm w-full"
-                      disabled={s.done}
-                    />
-                    <input
-                      type="number" inputMode="decimal" placeholder="RPE" step="0.5" min="1" max="10"
-                      value={s.rpe ?? ""}
-                      onChange={(ev) => updateSet(eIdx, sIdx, { rpe: ev.target.value ? Number(ev.target.value) : null })}
-                      className="bg-background/50 rounded px-2 py-1 text-sm w-full"
-                      disabled={s.done}
-                    />
-                  </div>
-                  <button
-                    onClick={() => markDone(eIdx, sIdx)}
-                    disabled={s.done || !s.reps}
-                    className={`p-2 rounded-lg ${s.done ? "bg-primary text-primary-foreground" : "bg-primary/20 text-primary disabled:opacity-40"}`}
-                    aria-label="Concluir série"
-                  >
-                    <Check size={16} />
-                  </button>
-                </div>
-              ))}
+            <ExerciseVideo exerciseName={currentExercise.name} />
+          </div>
+          <p className="text-[13px] text-muted-foreground leading-relaxed mb-6 font-normal">
+            {currentExercise.description}
+          </p>
+          
+          <div className="flex gap-8">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-background border border-border/50 flex items-center justify-center text-primary">
+                <Dumbbell size={16} />
+              </div>
+              <div>
+                <p className="text-[11px] text-muted-foreground font-medium uppercase leading-tight">Séries</p>
+                <p className="text-sm font-medium">{currentExercise.sets} x {currentExercise.reps}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-background border border-border/50 flex items-center justify-center text-[hsl(var(--text-accent))]">
+                <Timer size={16} />
+              </div>
+              <div>
+                <p className="text-[11px] text-muted-foreground font-medium uppercase leading-tight">Descanso</p>
+                <p className="text-sm font-medium">{currentExercise.rest}</p>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
+        </motion.div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background to-transparent">
-        <div className="max-w-lg mx-auto">
-          <button
-            onClick={finish}
-            disabled={saving}
-            className="w-full bg-gradient-primary text-primary-foreground font-bold py-4 rounded-2xl flex items-center justify-center gap-2 disabled:opacity-60"
+        <div className="space-y-3 mb-8">
+          <h3 className="text-[12px] font-medium text-muted-foreground uppercase px-1 mb-2">Registro de séries</h3>
+          {exerciseLogs.map((log, i) => (
+            <motion.div 
+              key={i}
+              className={`flex items-center gap-4 p-4 rounded-[14px] border transition-all ${
+                log.done ? 'bg-[hsl(var(--bg-success))] border-primary/20' : 'bg-secondary border-border/50'
+              }`}
+            >
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-[11px] ${
+                log.done ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground border border-border/50'
+              }`}>
+                {i + 1}
+              </div>
+              
+              <div className="flex-1 grid grid-cols-2 gap-4">
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-muted-foreground font-medium uppercase mb-1">Carga (kg)</span>
+                  <input 
+                    type="number"
+                    value={log.weight || ""}
+                    onChange={(e) => updateLog(currentExerciseIndex, i, 'weight', parseFloat(e.target.value) || 0)}
+                    placeholder="0"
+                    className="bg-background/50 border border-border/30 rounded-lg px-2 py-1.5 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/50"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-muted-foreground font-medium uppercase mb-1">Reps</span>
+                  <input 
+                    type="number"
+                    value={log.reps || ""}
+                    onChange={(e) => updateLog(currentExerciseIndex, i, 'reps', parseInt(e.target.value) || 0)}
+                    placeholder="0"
+                    className="bg-background/50 border border-border/30 rounded-lg px-2 py-1.5 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary/50"
+                  />
+                </div>
+              </div>
+
+              <button 
+                onClick={() => toggleDone(currentExerciseIndex, i)}
+                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                  log.done ? 'bg-primary text-primary-foreground' : 'bg-background border border-border/50 text-muted-foreground hover:text-primary'
+                }`}
+              >
+                {log.done ? <CheckCircle2 size={18} /> : <Play size={16} className="ml-0.5" />}
+              </button>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="flex gap-4">
+          <button 
+            disabled={currentExerciseIndex === 0}
+            onClick={() => setCurrentExerciseIndex(prev => prev - 1)}
+            className="flex-1 bg-secondary border border-border/50 py-4 rounded-[14px] font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-30"
           >
-            <StopCircle size={20} />
-            {saving ? "Salvando..." : "Finalizar treino"}
+            <ChevronLeft size={16} /> Anterior
           </button>
+          
+          {currentExerciseIndex < totalExercises - 1 ? (
+            <button 
+              onClick={() => setCurrentExerciseIndex(prev => prev + 1)}
+              className="flex-[2] bg-primary text-primary-foreground py-4 rounded-[14px] font-semibold text-sm flex items-center justify-center gap-2"
+            >
+              Próximo <ChevronRight size={16} />
+            </button>
+          ) : (
+            <button 
+              onClick={finishWorkout}
+              disabled={isFinishing}
+              className="flex-[2] bg-primary text-primary-foreground py-4 rounded-[14px] font-semibold text-sm flex items-center justify-center gap-2"
+            >
+              {isFinishing ? "Salvando..." : "Finalizar"} <CheckCircle2 size={16} />
+            </button>
+          )}
         </div>
       </div>
+
+      <AnimatePresence>
+        {isResting && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-6 left-5 right-5 z-50 bg-secondary border border-primary/20 p-4 rounded-[14px] flex items-center justify-between shadow-xl"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[hsl(var(--bg-success))] flex items-center justify-center text-primary">
+                <TimerIcon size={18} />
+              </div>
+              <div>
+                <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-tight">Tempo de descanso</p>
+                <p className="text-xl font-medium text-primary">{Math.floor(restTime / 60)}:{(restTime % 60).toString().padStart(2, '0')}</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setIsResting(false)}
+              className="px-4 py-2 bg-background border border-border/50 rounded-lg text-[11px] font-semibold"
+            >
+              Pular
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
+
   );
 }

@@ -28,15 +28,14 @@ export default function EditableStatCard({
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(value);
 
-  const borderClass =
-    variant === "primary" ? "glow-border" :
-    variant === "accent" ? "shadow-neon-blue border-accent/30" :
-    "border-border/50";
-  const iconBg = variant === "primary" ? "bg-primary/15" : variant === "accent" ? "bg-accent/15" : "bg-secondary";
-  const iconColor = variant === "primary" ? "text-primary" : variant === "accent" ? "text-accent" : "text-foreground";
+  const borderClass = "border-border/50";
+  const iconBg = variant === "primary" ? "bg-[hsl(var(--bg-success))]" : variant === "accent" ? "bg-[hsl(var(--bg-accent))]" : "bg-secondary";
+  const iconColor = variant === "primary" ? "text-primary" : variant === "accent" ? "text-[hsl(var(--text-accent))]" : "text-muted-foreground";
+  const fillClass = variant === "primary" ? "bg-primary" : variant === "accent" ? "bg-[hsl(var(--fill-accent))]" : "bg-muted-foreground";
 
   const pct = goal ? Math.min(100, Math.round((value / goal) * 100)) : null;
   const display = value >= 1000 ? value.toLocaleString("pt-BR") : String(value);
+
 
   return (
     <>
@@ -45,7 +44,7 @@ export default function EditableStatCard({
         animate={{ opacity: 1, y: 0 }}
         whileTap={{ scale: 0.97 }}
         onClick={() => { setDraft(value); setOpen(true); }}
-        className={`glass rounded-2xl p-4 text-left w-full ${borderClass} ${className || ""}`}
+        className={`bg-secondary border rounded-[14px] p-4 text-left w-full transition-all active:scale-[0.98] ${borderClass} ${className || ""}`}
       >
         <div className="flex items-center gap-3">
           <div className={`p-2.5 rounded-xl ${iconBg}`}>
@@ -53,14 +52,15 @@ export default function EditableStatCard({
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs text-muted-foreground">{label}</p>
-            <p className="text-lg font-bold font-display truncate">
-              {display}{unit && <span className="text-xs text-muted-foreground ml-1">{unit}</span>}
+            <p className="text-xl font-medium font-body truncate">
+              {display}{unit && <span className="text-[12px] text-muted-foreground font-normal ml-1">{unit}</span>}
             </p>
             {pct !== null && (
-              <div className="mt-1.5 h-1 rounded-full bg-secondary overflow-hidden">
-                <div className="h-full bg-gradient-primary transition-all" style={{ width: `${pct}%` }} />
+              <div className="mt-2 h-1 rounded-full bg-background overflow-hidden">
+                <div className={`h-full transition-all ${fillClass}`} style={{ width: `${pct}%` }} />
               </div>
             )}
+
           </div>
         </div>
       </motion.button>

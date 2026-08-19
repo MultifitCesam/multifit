@@ -54,63 +54,75 @@ export default function HomePage() {
   if (loading) return <HomePageSkeleton />;
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6 max-w-lg mx-auto">
+    <div className="min-h-screen pb-24 px-5 pt-8 max-w-lg mx-auto bg-background">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-6"
+        className="flex items-center justify-between mb-8"
       >
         <div className="flex items-center gap-3">
-          <img src={logo} alt="MultiFit" className="w-12 h-12 object-contain" />
+          <div className="w-10 h-10 rounded-xl bg-[hsl(var(--bg-success))] flex items-center justify-center">
+            <Flame size={20} className="text-primary" />
+          </div>
           <div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Olá,</p>
-            <h1 className="text-2xl font-black font-display tracking-tight leading-tight">
-              {isProfileComplete ? profile!.name.split(" ")[0] : "Atleta"}{" "}
-              <span className="premium-gradient-text">MultiFit</span>
+            <p className="text-[12px] text-muted-foreground font-medium">Olá,</p>
+            <h1 className="text-base font-medium text-foreground leading-tight">
+              {isProfileComplete ? profile!.name.split(" ")[0] : "Atleta"}
             </h1>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => navigate("/notifications")}
-            className="relative w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+            className="w-9 h-9 rounded-full bg-secondary border border-border/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
             title="Notificações"
           >
             <Bell size={16} />
             {unread > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">{unread > 9 ? "9+" : unread}</span>
+              <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-primary" />
             )}
           </button>
-          <StreakBadge days={7} />
           <button
             onClick={() => navigate("/profile")}
-            className="w-10 h-10 rounded-full bg-gradient-primary p-[2px] shadow-neon"
+            className="w-9 h-9 rounded-full bg-[hsl(var(--bg-success))] flex items-center justify-center overflow-hidden"
             title="Meu perfil"
           >
-            <div className="w-full h-full rounded-full bg-background flex items-center justify-center overflow-hidden">
-              {profile?.avatar_url ? (
-                <SafeImg src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <User size={16} className="text-primary" />
-              )}
-            </div>
+            {profile?.avatar_url ? (
+              <SafeImg src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <User size={16} className="text-primary" />
+            )}
           </button>
+        </div>
+      </motion.div>
+
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="bg-[hsl(var(--bg-success))] rounded-[14px] p-4 mb-4 flex items-center justify-between"
+      >
+        <div className="flex items-center gap-2">
+          <Flame size={18} className="text-primary" />
+          <span className="text-sm font-medium text-primary">7 dias seguidos</span>
+        </div>
+        <div className="flex gap-1">
+          {[1, 2, 3].map(i => (
+            <span key={i} className="w-1.5 h-1.5 rounded-full bg-primary" />
+          ))}
         </div>
       </motion.div>
 
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="glass-premium rounded-2xl p-5 mb-8 relative overflow-hidden"
+        transition={{ delay: 0.3 }}
+        className="bg-secondary border border-border/50 rounded-[14px] p-4 mb-6 italic text-sm text-muted-foreground"
       >
-        <div className="absolute top-0 right-0 p-3 opacity-10">
-          <TrendingUp size={48} className="text-primary" />
-        </div>
-        <p className="text-sm text-foreground/90 italic font-medium leading-relaxed relative z-10">
-          "{quote}"
-        </p>
+        "{quote}"
       </motion.div>
+
 
       {!isProfileComplete && !loading && (
         <motion.button
@@ -129,98 +141,95 @@ export default function HomePage() {
         </motion.button>
       )}
 
-      <div className="flex items-end justify-between mb-4 px-1">
-        <h2 className="text-xl font-black font-display tracking-tight">Atividade</h2>
-        <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest bg-secondary/50 px-2 py-0.5 rounded-full border border-white/5">Auto-save on</span>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-base font-medium text-foreground">Atividade de hoje</h2>
+        <span className="text-[11px] text-muted-foreground font-medium">salvo automaticamente</span>
       </div>
-      <div className="grid grid-cols-2 gap-3 mb-6">
+
+      <div className="grid grid-cols-2 gap-3 mb-8">
         <EditableStatCard
           icon={Flame} label="Calorias" variant="primary"
           value={stats?.calories ?? 0} goal={stats?.calories_goal ?? 500} unit="kcal"
           quickSteps={[50, 200]}
           onChange={(v) => update({ calories: v })}
-          className="premium-card-hover"
         />
         <EditableStatCard
           icon={Footprints} label="Passos" variant="accent"
           value={stats?.steps ?? 0} goal={stats?.steps_goal ?? 10000}
           quickSteps={[500, 2000]}
           onChange={(v) => update({ steps: v })}
-          className="premium-card-hover"
         />
         <EditableStatCard
           icon={Timer} label="Tempo ativo"
           value={stats?.active_minutes ?? 0} goal={stats?.active_minutes_goal ?? 60} unit="min"
           quickSteps={[10, 30]}
           onChange={(v) => update({ active_minutes: v })}
-          className="premium-card-hover"
         />
         <EditableStatCard
           icon={Droplet} label="Água"
           value={stats?.water_ml ?? 0} goal={stats?.water_ml_goal ?? 2000} unit="ml"
           quickSteps={[250, 500]}
           onChange={(v) => update({ water_ml: v })}
-          className="premium-card-hover"
         />
       </div>
 
-      <h2 className="text-lg font-bold font-display mb-3">Acesso Rápido</h2>
+
+      <h2 className="text-base font-medium text-foreground mb-4">Acesso rápido</h2>
       <div className="grid grid-cols-2 gap-4 mb-8 stagger-load">
         {[
-          { icon: Dumbbell, label: "Meu Treino", path: "/workouts", color: "primary", delay: "stagger-1" },
-          { icon: Bot, label: "Falar c/ Coach", path: "/chat", color: "accent", delay: "stagger-2" },
-          { icon: Apple, label: "Nutrição", path: "/nutrition", color: "primary", delay: "stagger-3" },
-          { icon: TrendingUp, label: "Evolução", path: "/dashboard", color: "accent", delay: "stagger-4" },
+          { icon: Dumbbell, label: "Meu treino", path: "/workouts", sub: "plano atual" },
+          { icon: Bot, label: "Coach IA", path: "/chat", sub: "tirar dúvidas" },
+          { icon: Apple, label: "Nutrição", path: "/nutrition", sub: "plano alimentar" },
+          { icon: TrendingUp, label: "Evolução", path: "/dashboard", sub: "ver estatísticas" },
         ].map((item) => (
-          <motion.button
+          <button
             key={item.label}
-            whileHover={{ scale: 1.02, translateY: -2 }}
-            whileTap={{ scale: 0.98 }}
             onClick={() => navigate(item.path)}
-            className={`glass-premium rounded-2xl p-5 flex flex-col items-center gap-3 transition-all duration-300 hover:border-primary/40 group ${item.delay}`}
+            className="bg-secondary border border-border/50 rounded-[14px] p-4 text-left group active:scale-[0.98] transition-all"
           >
-            <div className={`p-4 rounded-2xl transition-transform duration-300 group-hover:scale-110 ${item.color === "primary" ? "bg-primary/10 shadow-[0_0_15px_rgba(132,204,22,0.1)]" : "bg-accent/10 shadow-[0_0_15px_rgba(132,204,22,0.1)]"}`}>
-              <item.icon size={26} className={item.color === "primary" ? "text-primary" : "text-accent"} />
+            <div className="w-9 h-9 rounded-xl bg-background border border-border/50 flex items-center justify-center mb-3 text-muted-foreground group-hover:text-primary transition-colors">
+              <item.icon size={18} />
             </div>
-            <span className="text-sm font-semibold tracking-tight">{item.label}</span>
-          </motion.button>
+            <p className="text-sm font-medium text-foreground">{item.label}</p>
+            <p className="text-[11px] text-muted-foreground">{item.sub}</p>
+          </button>
         ))}
+
       </div>
 
-      <h2 className="text-lg font-bold font-display mb-3 px-1">Esta Semana</h2>
-      <div className="glass-premium rounded-3xl p-6 mb-10 stagger-load stagger-5">
+      <h2 className="text-base font-medium text-foreground mb-4">Esta semana</h2>
+      <div className="bg-secondary border border-border/50 rounded-[20px] p-5 mb-10">
         <div className="flex justify-between items-end mb-6">
           {["S", "T", "Q", "Q", "S", "S", "D"].map((d, i) => (
             <div key={i} className="flex flex-col items-center gap-2">
-              <span className="text-[10px] text-muted-foreground font-bold">{d}</span>
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                className={`w-9 h-9 rounded-2xl flex items-center justify-center text-xs font-bold transition-all ${
+              <span className="text-[11px] text-muted-foreground font-medium">{d}</span>
+              <div
+                className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-medium transition-all ${
                   i < 5
-                    ? "bg-gradient-primary text-primary-foreground shadow-neon scale-110"
+                    ? "bg-primary text-primary-foreground"
                     : i === 5
-                    ? "border-2 border-primary/40 text-primary"
-                    : "bg-secondary/50 text-muted-foreground"
+                    ? "border border-primary/30 text-primary"
+                    : "bg-background text-muted-foreground border border-border/50"
                 }`}
               >
                 {i < 5 ? "✓" : ""}
-              </motion.div>
+              </div>
             </div>
           ))}
         </div>
-        <div className="flex items-center justify-between text-xs">
+        <div className="flex items-center justify-between text-[12px] mb-2">
           <span className="text-muted-foreground font-medium">Progresso semanal</span>
-          <span className="text-primary font-bold">5 de 7 treinos</span>
+          <span className="text-foreground font-semibold">5 de 7 treinos</span>
         </div>
-        <div className="mt-2 h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+        <div className="h-1 w-full bg-background rounded-full overflow-hidden">
           <motion.div 
             initial={{ width: 0 }}
             animate={{ width: "71%" }}
-            className="h-full bg-gradient-primary"
+            className="h-full bg-primary"
           />
         </div>
       </div>
+
 
       <BottomNav />
     </div>

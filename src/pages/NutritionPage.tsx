@@ -127,16 +127,14 @@ export default function NutritionPage() {
   }
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6 max-w-lg mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-11 h-11 rounded-xl bg-gradient-primary flex items-center justify-center shadow-neon">
-          <Apple size={22} className="text-primary-foreground" />
+    <div className="min-h-screen pb-24 px-5 pt-8 max-w-lg mx-auto bg-background">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-10 h-10 rounded-xl bg-[hsl(var(--bg-success))] flex items-center justify-center">
+          <Apple size={20} className="text-primary" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold font-display">
-            <span className="text-gradient">Nutrição</span> Inteligente
-          </h1>
-          <p className="text-xs text-muted-foreground">Calculado a partir do seu perfil</p>
+          <h1 className="text-xl font-medium text-foreground">Nutrição</h1>
+          <p className="text-[12px] text-muted-foreground font-medium">calculado a partir do seu perfil</p>
         </div>
       </div>
 
@@ -144,101 +142,106 @@ export default function NutritionPage() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass glow-border rounded-2xl p-5 mb-4 text-center"
+        className="bg-secondary border border-border/50 rounded-[20px] p-6 mb-4 text-center"
       >
-        <Flame size={22} className="text-primary mx-auto mb-1" />
-        <p className="text-xs text-muted-foreground">Meta calórica diária</p>
-        <p className="text-4xl font-bold font-display text-gradient my-1">{data.target}</p>
-        <p className="text-xs text-muted-foreground">kcal • TDEE base {data.tdee}</p>
+        <div className="w-8 h-8 rounded-lg bg-background border border-border/50 flex items-center justify-center mx-auto mb-3">
+          <Flame size={16} className="text-primary" />
+        </div>
+        <p className="text-[12px] text-muted-foreground font-medium mb-1">Meta calórica diária</p>
+        <p className="text-4xl font-medium text-foreground leading-tight mb-1">{data.target}</p>
+        <p className="text-[12px] text-muted-foreground font-medium">kcal • tdee base {data.tdee}</p>
       </motion.div>
 
       {/* Macros */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-3 gap-3 mb-8">
         {[
-          { icon: Beef, label: "Proteína", val: data.protein, unit: "g", color: "primary" },
-          { icon: Wheat, label: "Carbo", val: data.carbs, unit: "g", color: "accent" },
-          { icon: Droplet, label: "Gordura", val: data.fat, unit: "g", color: "primary" },
+          { icon: Beef, label: "Proteína", val: data.protein, unit: "g", variant: "primary" },
+          { icon: Wheat, label: "Carbo", val: data.carbs, unit: "g", variant: "accent" },
+          { icon: Droplet, label: "Gordura", val: data.fat, unit: "g", variant: "primary" },
         ].map(m => (
-          <div key={m.label} className="glass rounded-2xl p-3 text-center">
-            <m.icon size={18} className={`mx-auto mb-1 ${m.color === "primary" ? "text-primary" : "text-accent"}`} />
-            <p className="text-lg font-bold font-display">{m.val}{m.unit}</p>
-            <p className="text-[10px] text-muted-foreground">{m.label}</p>
+          <div key={m.label} className="bg-secondary border border-border/50 rounded-[14px] p-3 text-center">
+            <div className={`w-7 h-7 rounded-lg mx-auto mb-2 flex items-center justify-center bg-background border border-border/50 ${m.variant === "primary" ? "text-primary" : "text-[hsl(var(--text-accent))]"}`}>
+              <m.icon size={14} />
+            </div>
+            <p className="text-lg font-medium text-foreground leading-tight">{m.val}{m.unit}</p>
+            <p className="text-[10px] text-muted-foreground font-medium uppercase mt-0.5">{m.label}</p>
           </div>
         ))}
       </div>
 
       {/* Recommendations */}
-      <h2 className="text-sm font-bold font-display mb-2 text-muted-foreground uppercase tracking-wide">
+      <h2 className="text-[12px] font-medium text-muted-foreground uppercase tracking-tight mb-3 px-1">
         Recomendações para {profile.goal.replace("_", " ")}
       </h2>
-      <div className="glass rounded-2xl p-4 mb-6 space-y-2">
+      <div className="bg-secondary border border-border/50 rounded-[20px] p-5 mb-8 space-y-3">
         {(recommendations[profile.goal] || []).map((r, i) => (
-          <div key={i} className="flex gap-2 text-sm">
-            <span className="text-primary">•</span>
-            <p className="text-foreground/85 leading-relaxed">{r}</p>
+          <div key={i} className="flex gap-3 text-[13px] leading-relaxed">
+            <span className="text-primary font-bold">•</span>
+            <p className="text-foreground font-normal">{r}</p>
           </div>
         ))}
       </div>
 
       {/* Dietary inputs */}
-      <h2 className="text-sm font-bold font-display mb-2 text-muted-foreground uppercase tracking-wide">
+      <h2 className="text-[12px] font-medium text-muted-foreground uppercase tracking-tight mb-3 px-1">
         Suas restrições
       </h2>
-      <div className="space-y-3 mb-4">
+      <div className="space-y-4 mb-6">
         <div>
-          <label className="text-xs font-bold text-muted-foreground mb-1.5 block">Alergias</label>
+          <label className="text-[11px] font-medium text-muted-foreground uppercase mb-1.5 px-1 block">Alergias</label>
           <input
             type="text"
             value={allergies}
             onChange={e => setAllergies(e.target.value.slice(0, 200))}
             placeholder="Ex: amendoim, lactose..."
-            className="w-full bg-secondary rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="w-full bg-secondary border border-border/50 rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
           />
         </div>
         <div>
-          <label className="text-xs font-bold text-muted-foreground mb-1.5 block">Restrições alimentares</label>
+          <label className="text-[11px] font-medium text-muted-foreground uppercase mb-1.5 px-1 block">Restrições alimentares</label>
           <input
             type="text"
             value={restrictions}
             onChange={e => setRestrictions(e.target.value.slice(0, 200))}
             placeholder="Ex: vegetariano, sem glúten..."
-            className="w-full bg-secondary rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="w-full bg-secondary border border-border/50 rounded-[14px] px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
           />
         </div>
       </div>
 
       <motion.button
-        whileTap={{ scale: 0.97 }}
+        whileTap={{ scale: 0.98 }}
         onClick={generatePlan}
         disabled={generating}
-        className="w-full bg-gradient-primary text-primary-foreground font-bold py-3.5 rounded-xl shadow-neon disabled:opacity-60 flex items-center justify-center gap-2 mb-4"
+        className="w-full bg-primary text-primary-foreground font-semibold py-4 rounded-[14px] disabled:opacity-60 flex items-center justify-center gap-2 mb-6"
       >
         {generating ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
-        {generating ? "Gerando plano..." : "Gerar plano alimentar com IA"}
+        {generating ? "Gerando..." : "Gerar plano alimentar com IA"}
       </motion.button>
 
       {aiPlan && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass glow-border rounded-2xl p-5 mb-4"
+          className="bg-secondary border border-border/50 rounded-[20px] p-6 mb-6"
         >
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             <Sparkles size={16} className="text-primary" />
-            <h3 className="font-bold font-display">Seu plano personalizado</h3>
+            <h3 className="font-medium text-foreground text-sm">Seu plano personalizado</h3>
           </div>
-          <div className="prose prose-sm prose-invert max-w-none prose-headings:font-display prose-strong:text-primary">
+          <div className="prose prose-sm prose-invert max-w-none text-[13px] leading-relaxed text-muted-foreground prose-strong:text-foreground prose-strong:font-semibold">
             <ReactMarkdown>{aiPlan}</ReactMarkdown>
           </div>
         </motion.div>
       )}
 
-      <div className="flex gap-2 text-xs text-muted-foreground p-3 bg-secondary/50 rounded-xl">
+      <div className="flex gap-3 text-[11px] text-muted-foreground p-4 bg-secondary/30 rounded-[14px] border border-border/30">
         <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
-        <p>Esses cálculos são estimativas. Para acompanhamento personalizado, consulte um nutricionista.</p>
+        <p className="leading-normal">Estes cálculos são estimativas baseadas no seu perfil. Consulte um nutricionista para um acompanhamento especializado.</p>
       </div>
 
       <BottomNav />
     </div>
+
   );
 }

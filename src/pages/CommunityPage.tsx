@@ -346,14 +346,12 @@ export default function CommunityPage() {
   }
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6 max-w-lg mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold font-display">
-          <span className="text-gradient">Comunidade</span>
-        </h1>
+    <div className="min-h-screen pb-24 px-5 pt-8 max-w-lg mx-auto bg-background">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-xl font-medium text-foreground">Comunidade</h1>
         <button
           onClick={() => setComposerOpen(true)}
-          className="bg-gradient-primary text-primary-foreground p-2.5 rounded-full shadow-lg active:scale-95 transition"
+          className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg active:scale-95 transition-all"
           aria-label="Nova postagem"
         >
           <Plus size={18} />
@@ -367,17 +365,17 @@ export default function CommunityPage() {
       )}
 
       {!loading && posts.length === 0 && (
-        <div className="glass-premium rounded-3xl p-10 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-50" />
+        <div className="bg-secondary border border-border/50 rounded-[20px] p-10 text-center relative overflow-hidden">
           <div className="relative z-10">
-            <Users size={40} className="text-primary/40 mx-auto mb-4" />
-            <h3 className="text-lg font-bold font-display mb-2">Feed Vazio</h3>
-            <p className="text-xs text-muted-foreground max-w-[200px] mx-auto leading-relaxed">
+            <Users size={32} className="text-muted-foreground/30 mx-auto mb-4" />
+            <h3 className="text-base font-medium text-foreground mb-2">Feed vazio</h3>
+            <p className="text-[13px] text-muted-foreground max-w-[200px] mx-auto leading-relaxed">
               Ainda não há nada por aqui. Seja o primeiro a inspirar a comunidade! 💪
             </p>
           </div>
         </div>
       )}
+
 
       <div className="space-y-4">
         {posts.map((post, i) => {
@@ -387,11 +385,12 @@ export default function CommunityPage() {
             <motion.article
               id={`post-${post.id}`}
               key={post.id}
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(i * 0.04, 0.3) }}
-              className="glass rounded-2xl overflow-hidden"
+              className="bg-secondary border border-border/50 rounded-[20px] overflow-hidden mb-4"
             >
+
               {isRepost && (
                 <div className="px-4 pt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
                   <Repeat2 size={12} />
@@ -409,11 +408,12 @@ export default function CommunityPage() {
                   onClick={() => display.author?.username && navigate(`/u/${display.author.username}`)}
                   className="flex-1 min-w-0 text-left"
                 >
-                  <p className="text-sm font-bold truncate">{display.author?.name || "Usuário"}</p>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-sm font-medium text-foreground truncate">{display.author?.name || "Usuário"}</p>
+                  <p className="text-[11px] text-muted-foreground font-medium">
                     {display.author?.username ? `@${display.author.username} • ` : ""}
                     {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: ptBR })}
                   </p>
+
                 </button>
                 <div className="relative">
                   <button
@@ -456,44 +456,46 @@ export default function CommunityPage() {
               )}
 
               {display.caption && (
-                <p className="text-sm leading-relaxed px-4 pt-3">
-                  <span className="font-bold mr-2">{display.author?.name}</span>
+                <p className="text-[13px] leading-relaxed px-4 pt-3 text-foreground font-normal">
+                  <span className="font-semibold mr-2">{display.author?.name}</span>
                   {display.caption}
                 </p>
               )}
 
-              <div className="flex items-center gap-5 px-4 py-3">
+
+              <div className="flex items-center gap-5 px-4 py-4">
                 <ActionBtn 
                   onClick={() => toggleLike(post)} 
                   active={post.liked} 
-                  activeClass="text-neon-pink"
-                  className="like-btn transition-transform duration-200"
+                  activeClass="text-[hsl(var(--destructive))]"
+                  className="transition-transform duration-200"
                 >
                   <motion.span
                     key={String(post.liked)}
                     initial={{ scale: 1 }}
-                    animate={post.liked ? { scale: [1, 1.4, 0.9, 1.15, 1] } : { scale: 1 }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    animate={post.liked ? { scale: [1, 1.3, 0.95, 1.1, 1] } : { scale: 1 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
                     className="inline-flex"
                   >
-                    <Heart size={18} className={post.liked ? "fill-neon-pink text-neon-pink" : ""} />
+                    <Heart size={20} className={post.liked ? "fill-destructive text-destructive" : "text-muted-foreground"} />
                   </motion.span>
-                  <span className="text-xs">{post.likes_count}</span>
+                  <span className="text-[12px] font-medium">{post.likes_count}</span>
                 </ActionBtn>
 
-                <ActionBtn onClick={() => openComments(post.id)} className="hover:text-primary transition-colors">
-                  <MessageCircle size={18} />
-                  <span className="text-xs">{post.comments_count}</span>
+                <ActionBtn onClick={() => openComments(post.id)} className="text-muted-foreground hover:text-foreground">
+                  <MessageCircle size={20} />
+                  <span className="text-[12px] font-medium">{post.comments_count}</span>
                 </ActionBtn>
                 
-                <ActionBtn onClick={() => repost(post)} className="hover:text-primary transition-colors active:rotate-180 duration-500">
-                  <Repeat2 size={18} />
-                  <span className="text-xs">{post.reposts_count}</span>
+                <ActionBtn onClick={() => repost(post)} className="text-muted-foreground hover:text-foreground active:rotate-180 duration-500">
+                  <Repeat2 size={20} />
+                  <span className="text-[12px] font-medium">{post.reposts_count}</span>
                 </ActionBtn>
-                <ActionBtn onClick={() => share(post)} className="ml-auto">
-                  <Share2 size={18} />
+                <ActionBtn onClick={() => share(post)} className="ml-auto text-muted-foreground hover:text-foreground">
+                  <Share2 size={20} />
                 </ActionBtn>
               </div>
+
             </motion.article>
           );
         })}
@@ -514,8 +516,9 @@ export default function CommunityPage() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 60, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg glass rounded-2xl p-5"
+              className="w-full max-w-lg bg-secondary border border-border/50 rounded-[20px] p-6"
             >
+
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold">Nova postagem</h2>
                 <button onClick={clearComposer} className="text-muted-foreground">
@@ -529,8 +532,9 @@ export default function CommunityPage() {
                 placeholder="O que você está treinando hoje?"
                 rows={3}
                 maxLength={500}
-                className="w-full bg-secondary/50 rounded-xl p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/40"
+                className="w-full bg-background border border-border/50 rounded-[14px] p-4 text-[13px] resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
               />
+
 
               {previewUrl && (
                 <div className="relative mt-3">
@@ -563,18 +567,19 @@ export default function CommunityPage() {
               <div className="flex items-center justify-between mt-4">
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 text-sm text-muted-foreground bg-secondary/60 px-3 py-2 rounded-lg hover:text-foreground"
+                  className="flex items-center gap-2 text-[12px] text-muted-foreground bg-background border border-border/50 px-4 py-2 rounded-xl hover:text-foreground transition-all"
                 >
                   <ImagePlus size={16} /> Foto / vídeo
                 </button>
                 <button
                   onClick={publish}
                   disabled={uploading}
-                  className="bg-gradient-primary text-primary-foreground text-sm font-bold px-5 py-2 rounded-full flex items-center gap-2 disabled:opacity-50"
+                  className="bg-primary text-primary-foreground text-sm font-semibold px-6 py-2.5 rounded-xl flex items-center gap-2 disabled:opacity-50"
                 >
                   {uploading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                   Publicar
                 </button>
+
               </div>
             </motion.div>
           </motion.div>
@@ -596,14 +601,16 @@ export default function CommunityPage() {
               animate={{ y: 0 }}
               exit={{ y: 80 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg glass rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[80vh]"
+              className="w-full max-w-lg bg-secondary border-t border-x border-border/50 rounded-t-[24px] sm:rounded-[24px] sm:border flex flex-col max-h-[85vh]"
             >
-              <div className="flex items-center justify-between p-4 border-b border-border/40">
-                <h2 className="font-bold">Comentários</h2>
+
+              <div className="flex items-center justify-between p-5 border-b border-border/30">
+                <h2 className="text-base font-medium text-foreground">Comentários</h2>
                 <button onClick={() => setActiveComments(null)} className="text-muted-foreground">
                   <X size={18} />
                 </button>
               </div>
+
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
                 {commentLoading && (
                   <div className="flex justify-center py-6">
@@ -617,10 +624,11 @@ export default function CommunityPage() {
                   <div key={c.id} className="flex gap-3">
                     <Avatar profile={c.author} size={32} />
                     <div className="flex-1">
-                      <div className="bg-secondary/60 rounded-2xl px-3 py-2">
-                        <p className="text-xs font-bold">{c.author?.name || "Usuário"}</p>
-                        <p className="text-sm leading-relaxed break-words">{c.content}</p>
+                      <div className="bg-background border border-border/50 rounded-[14px] px-3 py-2">
+                        <p className="text-[12px] font-semibold text-foreground">{c.author?.name || "Usuário"}</p>
+                        <p className="text-[13px] text-muted-foreground leading-relaxed break-words">{c.content}</p>
                       </div>
+
                       <div className="flex items-center gap-3 mt-1 ml-2">
                         <span className="text-[10px] text-muted-foreground">
                           {formatDistanceToNow(new Date(c.created_at), { addSuffix: true, locale: ptBR })}
@@ -638,7 +646,7 @@ export default function CommunityPage() {
                   </div>
                 ))}
               </div>
-              <div className="p-3 border-t border-border/40 flex gap-2">
+              <div className="p-4 border-t border-border/30 flex gap-3 bg-secondary rounded-b-[24px]">
                 <input
                   id="comment-input"
                   value={commentText}
@@ -647,16 +655,17 @@ export default function CommunityPage() {
                   placeholder={user ? "Adicione um comentário..." : "Faça login para comentar"}
                   disabled={!user}
                   maxLength={500}
-                  className="flex-1 bg-secondary/60 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50 transition-transform duration-200"
+                  className="flex-1 bg-background border border-border/50 rounded-xl px-4 py-2.5 text-[13px] focus:outline-none focus:ring-1 focus:ring-primary/50 disabled:opacity-50 transition-all"
                 />
                 <button
                   onClick={postComment}
                   disabled={!user || !commentText.trim()}
-                  className="bg-gradient-primary text-primary-foreground rounded-full px-4 py-2 text-sm font-bold disabled:opacity-40 active:scale-90 transition-transform"
+                  className="bg-primary text-primary-foreground rounded-xl px-4 py-2.5 text-sm font-semibold disabled:opacity-40 active:scale-95 transition-all"
                 >
-                  <Send size={14} />
+                  <Send size={16} />
                 </button>
               </div>
+
             </motion.div>
           </motion.div>
         )}
@@ -673,18 +682,20 @@ export default function CommunityPage() {
             <motion.div
               initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 30, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md glass rounded-2xl p-5"
+              className="w-full max-w-md bg-secondary border border-border/50 rounded-[24px] p-6 shadow-2xl"
             >
-              <div className="flex items-center gap-2 mb-4">
-                <Flag size={18} className="text-destructive" />
-                <h2 className="font-bold">Denunciar post</h2>
+              <div className="flex items-center gap-3 mb-6">
+                <Flag size={20} className="text-destructive" />
+                <h2 className="text-base font-medium text-foreground">Denunciar publicação</h2>
               </div>
-              <label className="text-xs font-bold text-muted-foreground mb-1.5 block">Motivo</label>
+
+              <label className="text-[11px] font-medium text-muted-foreground uppercase mb-1.5 px-1 block tracking-tight">Motivo</label>
               <select
                 value={reportReason}
                 onChange={(e) => setReportReason(e.target.value)}
-                className="w-full bg-secondary rounded-xl px-3 py-3 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                className="w-full bg-background border border-border/50 rounded-[14px] px-3 py-3.5 text-sm mb-4 focus:outline-none focus:ring-1 focus:ring-primary/50"
               >
+
                 <option>Spam</option>
                 <option>Conteúdo inadequado</option>
                 <option>Discurso de ódio</option>
@@ -693,26 +704,28 @@ export default function CommunityPage() {
                 <option>Violência</option>
                 <option>Outro</option>
               </select>
-              <label className="text-xs font-bold text-muted-foreground mb-1.5 block">Detalhes (opcional)</label>
+              <label className="text-[11px] font-medium text-muted-foreground uppercase mb-1.5 px-1 block tracking-tight">Detalhes (opcional)</label>
               <textarea
                 value={reportDetails}
                 onChange={(e) => setReportDetails(e.target.value.slice(0, 500))}
                 rows={3}
                 placeholder="Conte mais sobre o problema..."
-                className="w-full bg-secondary rounded-xl px-3 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 mb-4"
+                className="w-full bg-background border border-border/50 rounded-[14px] px-3 py-3 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50 mb-6"
               />
+
               <div className="flex gap-2">
-                <button onClick={() => setReportPostId(null)} className="flex-1 bg-secondary py-3 rounded-xl text-sm font-medium">
+                <button onClick={() => setReportPostId(null)} className="flex-1 bg-background border border-border/50 py-4 rounded-[14px] text-sm font-medium">
                   Cancelar
                 </button>
                 <button
                   onClick={submitReport}
                   disabled={reporting}
-                  className="flex-1 bg-destructive text-destructive-foreground py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="flex-1 bg-destructive text-destructive-foreground py-4 rounded-[14px] text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
                 >
-                  {reporting ? <Loader2 size={14} className="animate-spin" /> : <Flag size={14} />}
+                  {reporting ? <Loader2 size={16} className="animate-spin" /> : <Flag size={16} />}
                   Enviar
                 </button>
+
               </div>
             </motion.div>
           </motion.div>
@@ -740,10 +753,11 @@ function ActionBtn({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1.5 transition active:scale-95 ${
+      className={`flex items-center gap-1.5 transition-all active:scale-[0.98] ${
         active ? activeClass : "text-muted-foreground hover:text-foreground"
       } ${className}`}
     >
+
       {children}
     </button>
   );

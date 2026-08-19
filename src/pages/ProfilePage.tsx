@@ -65,15 +65,17 @@ function CardChips<T extends string>({
             type="button"
             whileTap={{ scale: 0.95 }}
             onClick={() => onChange(opt.value)}
-            className={`relative p-3 rounded-2xl text-left transition-all border ${
+            className={`relative p-3 rounded-xl text-left transition-all border ${
               active
-                ? "bg-primary/15 border-primary text-foreground shadow-neon"
-                : "bg-secondary/60 border-transparent text-muted-foreground hover:text-foreground hover:bg-secondary"
+                ? "bg-[hsl(var(--bg-success))] border-primary text-foreground"
+                : "bg-secondary border-border/50 text-muted-foreground hover:text-foreground"
             }`}
+
           >
             {opt.emoji && <div className="text-xl mb-1">{opt.emoji}</div>}
-            <div className={`text-xs font-bold ${active ? "text-primary" : ""}`}>{opt.label}</div>
-            {opt.desc && <div className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{opt.desc}</div>}
+            <div className={`text-[12px] font-medium ${active ? "text-primary" : ""}`}>{opt.label}</div>
+            {opt.desc && <div className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">{opt.desc}</div>}
+
           </motion.button>
         );
       })}
@@ -83,20 +85,22 @@ function CardChips<T extends string>({
 
 function NumberStepper({ value, onChange, min, max, step = 1, suffix }: { value: number; onChange: (v: number) => void; min: number; max: number; step?: number; suffix?: string }) {
   return (
-    <div className="flex items-center bg-secondary rounded-xl overflow-hidden">
+    <div className="flex items-center bg-secondary border border-border/50 rounded-xl overflow-hidden">
       <button
         type="button"
         onClick={() => onChange(Math.max(min, value - step))}
-        className="px-4 py-3 text-lg text-muted-foreground hover:text-primary hover:bg-secondary/60 transition"
+        className="px-4 py-3 text-lg text-muted-foreground hover:text-foreground hover:bg-background/40 transition"
       >−</button>
-      <div className="flex-1 text-center font-bold font-display">
-        {value}{suffix && <span className="text-xs text-muted-foreground ml-0.5">{suffix}</span>}
+      <div className="flex-1 text-center font-medium text-sm">
+        {value}{suffix && <span className="text-[10px] text-muted-foreground ml-0.5">{suffix}</span>}
       </div>
+
       <button
         type="button"
         onClick={() => onChange(Math.min(max, value + step))}
-        className="px-4 py-3 text-lg text-muted-foreground hover:text-primary hover:bg-secondary/60 transition"
+        className="px-4 py-3 text-lg text-muted-foreground hover:text-foreground hover:bg-background/40 transition"
       >+</button>
+
     </div>
   );
 }
@@ -185,14 +189,14 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen pb-28 px-4 pt-6 max-w-lg mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold font-display">Meu <span className="text-gradient">Perfil</span></h1>
+    <div className="min-h-screen pb-28 px-5 pt-8 max-w-lg mx-auto bg-background">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-xl font-medium text-foreground">Meu perfil</h1>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <button
             onClick={async () => { await signOut(); navigate("/auth"); }}
-            className="p-2 rounded-xl bg-secondary text-muted-foreground hover:text-destructive transition"
+            className="p-2.5 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:text-destructive transition-all"
             aria-label="Sair"
           >
             <LogOut size={16} />
@@ -200,30 +204,32 @@ export default function ProfilePage() {
         </div>
       </div>
 
+
       {/* Avatar */}
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center mb-8">
         <div className="relative">
-          <div className="w-28 h-28 rounded-full bg-gradient-primary p-[3px] shadow-neon">
-            <div className="w-full h-full rounded-full bg-background flex items-center justify-center overflow-hidden">
+          <div className="w-28 h-28 rounded-full bg-secondary border border-border/50 p-1">
+            <div className="w-full h-full rounded-full bg-background flex items-center justify-center overflow-hidden border border-border/30">
               {local.avatar_url ? (
                 <SafeImg src={local.avatar_url} alt="" className="w-full h-full object-cover" />
               ) : (
-                <User size={42} className="text-primary" />
+                <User size={42} className="text-muted-foreground/30" />
               )}
             </div>
           </div>
           <button
             onClick={() => fileRef.current?.click()}
             disabled={uploadingAvatar}
-            className="absolute bottom-0 right-0 w-9 h-9 rounded-full bg-gradient-primary flex items-center justify-center shadow-neon disabled:opacity-60"
+            className="absolute bottom-0 right-0 w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow-lg disabled:opacity-60"
             aria-label="Trocar foto"
           >
             {uploadingAvatar ? <Loader2 size={14} className="animate-spin text-primary-foreground" /> : <Camera size={14} className="text-primary-foreground" />}
           </button>
           <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatarPick} className="hidden" />
         </div>
-        <p className="font-bold font-display text-lg mt-3">{local.name || "Sem nome"}</p>
-        <p className="text-xs text-muted-foreground capitalize">{local.level} • {local.goal.replace("_", " ")}</p>
+        <p className="text-base font-medium text-foreground mt-4">{local.name || "Sem nome"}</p>
+        <p className="text-[12px] text-muted-foreground mt-0.5 tracking-tight capitalize font-medium">{local.level} • {local.goal.replace("_", " ")}</p>
+
       </motion.div>
 
       <div className="space-y-6">
@@ -232,11 +238,11 @@ export default function ProfilePage() {
           <SectionTitle icon={Settings}>Informações</SectionTitle>
           <button
             onClick={() => local.username && navigate(`/u/${local.username}`)}
-            className="w-full glass rounded-xl px-4 py-3 flex items-center justify-between text-left hover:bg-secondary/40 transition"
+            className="w-full bg-secondary border border-border/50 rounded-xl px-4 py-3 flex items-center justify-between text-left hover:bg-secondary/80 transition-all"
           >
             <div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Ver perfil público</p>
-              <p className="font-bold text-sm">@{local.username}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-tight font-medium mb-0.5">Ver perfil público</p>
+              <p className="text-[13px] font-medium text-foreground">@{local.username}</p>
             </div>
             <ExternalLink size={14} className="text-primary" />
           </button>
@@ -247,9 +253,10 @@ export default function ProfilePage() {
               value={local.username || ""}
               onChange={(e) => set({ username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "_").slice(0, 30) })}
               placeholder="seu_username"
-              className="w-full bg-secondary rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="w-full bg-secondary border border-border/50 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
             />
           </div>
+
           <div>
             <Label>Nome</Label>
             <input
@@ -257,9 +264,10 @@ export default function ProfilePage() {
               value={local.name}
               onChange={(e) => set({ name: e.target.value.slice(0, 60) })}
               placeholder="Seu nome"
-              className="w-full bg-secondary rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="w-full bg-secondary border border-border/50 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
             />
           </div>
+
           <div>
             <Label>Bio</Label>
             <textarea
@@ -267,24 +275,26 @@ export default function ProfilePage() {
               onChange={(e) => set({ bio: e.target.value.slice(0, 200) })}
               placeholder="Conte um pouco sobre você..."
               rows={2}
-              className="w-full bg-secondary rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+              className="w-full bg-secondary border border-border/50 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none"
             />
           </div>
+
           <button
             onClick={() => set({ is_private: !local.is_private })}
-            className="w-full glass rounded-xl px-4 py-3 flex items-center justify-between text-left"
+            className="w-full bg-secondary border border-border/50 rounded-xl px-4 py-3 flex items-center justify-between text-left"
           >
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-3">
               {local.is_private ? <Lock size={16} className="text-primary" /> : <Globe size={16} className="text-primary" />}
               <div>
-                <p className="font-bold text-sm">{local.is_private ? "Conta privada" : "Conta pública"}</p>
-                <p className="text-[11px] text-muted-foreground">{local.is_private ? "Aprovação manual de seguidores" : "Qualquer um pode te seguir"}</p>
+                <p className="text-[13px] font-medium text-foreground">{local.is_private ? "Conta privada" : "Conta pública"}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{local.is_private ? "Aprovação manual de seguidores" : "Qualquer um pode te seguir"}</p>
               </div>
             </div>
-            <div className={`w-10 h-6 rounded-full p-0.5 transition ${local.is_private ? "bg-primary" : "bg-secondary"}`}>
-              <div className={`w-5 h-5 rounded-full bg-background transition ${local.is_private ? "translate-x-4" : ""}`} />
+            <div className={`w-10 h-6 rounded-full p-1 transition-colors duration-300 ${local.is_private ? "bg-primary" : "bg-muted"}`}>
+              <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-300 ${local.is_private ? "translate-x-4" : ""}`} />
             </div>
           </button>
+
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label>Idade</Label>
@@ -310,7 +320,7 @@ export default function ProfilePage() {
         {/* Goal */}
         <section>
           <SectionTitle>Objetivo principal</SectionTitle>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             {goals.map((g) => {
               const active = local.goal === g.value;
               return (
@@ -318,18 +328,19 @@ export default function ProfilePage() {
                   key={g.value}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => set({ goal: g.value })}
-                  className={`p-3 rounded-2xl flex items-center gap-2 border transition-all ${
+                  className={`p-3.5 rounded-xl flex items-center gap-2.5 border transition-all ${
                     active
-                      ? "bg-primary/15 border-primary shadow-neon"
-                      : "bg-secondary/60 border-transparent hover:bg-secondary"
+                      ? "bg-[hsl(var(--bg-success))] border-primary"
+                      : "bg-secondary border-border/50"
                   }`}
                 >
-                  <span className="text-xl">{g.emoji}</span>
-                  <span className={`text-xs font-bold ${active ? "text-primary" : ""}`}>{g.label}</span>
+                  <span className="text-lg">{g.emoji}</span>
+                  <span className={`text-[12px] font-medium ${active ? "text-primary" : "text-muted-foreground"}`}>{g.label}</span>
                 </motion.button>
               );
             })}
           </div>
+
         </section>
 
         {/* Body type */}
@@ -342,7 +353,8 @@ export default function ProfilePage() {
         <section className="space-y-3">
           <SectionTitle>Sono</SectionTitle>
           <div>
-            <Label>Horas de sono: <span className="text-primary font-bold">{local.sleep_hours}h</span></Label>
+            <Label>Horas de sono: <span className="text-primary font-medium">{local.sleep_hours}h</span></Label>
+
             <input
               type="range"
               min={4}
@@ -363,7 +375,8 @@ export default function ProfilePage() {
         <section className="space-y-3">
           <SectionTitle>Treino</SectionTitle>
           <div>
-            <Label>Frequência semanal: <span className="text-primary font-bold">{local.weekly_frequency}x</span></Label>
+            <Label>Frequência semanal: <span className="text-primary font-medium">{local.weekly_frequency}x</span></Label>
+
             <input
               type="range"
               min={2}
@@ -380,24 +393,26 @@ export default function ProfilePage() {
         </section>
 
         <motion.button
-          whileTap={{ scale: 0.97 }}
+          whileTap={{ scale: 0.98 }}
           onClick={handleSave}
           disabled={saving}
-          className="w-full bg-gradient-primary text-primary-foreground font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-neon disabled:opacity-60"
+          className="w-full bg-primary text-primary-foreground font-semibold py-4 rounded-xl flex items-center justify-center gap-2.5 disabled:opacity-60 transition-all"
         >
           {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
           {saving ? "Salvando..." : "Salvar Perfil"}
         </motion.button>
 
+
         <SmartwatchPanel />
 
         <button
           onClick={() => navigate("/nutrition")}
-          className="w-full bg-secondary text-foreground font-medium py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-secondary/80 transition"
+          className="w-full bg-secondary border border-border/50 text-foreground font-medium py-3.5 rounded-xl flex items-center justify-center gap-2.5 hover:bg-secondary/80 transition-all"
         >
           <Apple size={16} className="text-primary" />
           Ver minha nutrição
         </button>
+
       </div>
 
       <BottomNav />
@@ -407,13 +422,14 @@ export default function ProfilePage() {
 
 function SectionTitle({ children, icon: Icon }: { children: React.ReactNode; icon?: any }) {
   return (
-    <h2 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-1.5">
+    <h2 className="text-[11px] font-medium uppercase tracking-tight text-muted-foreground mb-3 px-1 flex items-center gap-1.5">
       {Icon && <Icon size={12} />}
       {children}
     </h2>
   );
 }
 
+
 function Label({ children }: { children: React.ReactNode }) {
-  return <label className="text-xs font-medium text-muted-foreground mb-1.5 block">{children}</label>;
+  return <label className="text-[12px] font-medium text-muted-foreground mb-1.5 px-1 block">{children}</label>;
 }

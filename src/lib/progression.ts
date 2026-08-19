@@ -30,7 +30,7 @@ function repsBounds(target: string): { min: number; max: number } {
 }
 
 export async function fetchRecentSets(userId: string, exerciseName: string, limit = 8): Promise<RecentSet[]> {
-  const { data } = await (supabase as any)
+  const { data } = await supabase
     .from("exercise_logs")
     .select("reps, weight_kg, rpe, done, created_at")
     .eq("user_id", userId)
