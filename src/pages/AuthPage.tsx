@@ -98,18 +98,27 @@ export default function AuthPage() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <div className="text-center mb-8">
-          <img
+        <div className="text-center mb-10">
+          <motion.img
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
             src={logo}
             alt="MultiFit"
-            className="w-40 h-40 mx-auto object-contain drop-shadow-[0_0_30px_hsl(var(--primary)/0.4)]"
+            className="w-44 h-44 mx-auto object-contain drop-shadow-[0_0_40px_rgba(132,204,22,0.3)]"
           />
-          <p className="text-sm text-muted-foreground mt-1">
-            {mode === "login" ? "Entre para continuar treinando" : "Crie sua conta e comece hoje"}
+          <h2 className="text-3xl font-black font-display tracking-tighter mt-4 premium-gradient-text">
+            MultiFit
+          </h2>
+          <p className="text-sm text-muted-foreground mt-2 font-medium tracking-wide">
+            {mode === "login" ? "BEM-VINDO DE VOLTA" : "COMECE SUA EVOLUÇÃO"}
           </p>
         </div>
 
-        <div className="glass glow-border rounded-2xl p-6">
+        <div className="glass-premium rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-accent/10 rounded-full blur-3xl" />
+          
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "signup" && (
               <div>
@@ -121,7 +130,7 @@ export default function AuthPage() {
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="Seu nome"
-                    className="w-full bg-secondary rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    className="w-full bg-secondary/50 border border-white/5 rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
                     required
                   />
                 </div>
@@ -136,7 +145,7 @@ export default function AuthPage() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="voce@email.com"
-                  className="w-full bg-secondary rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="w-full bg-secondary/50 border border-white/5 rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
                   required
                 />
               </div>
@@ -150,7 +159,7 @@ export default function AuthPage() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Mínimo 6 caracteres"
-                  className="w-full bg-secondary rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="w-full bg-secondary/50 border border-white/5 rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
                   required
                   minLength={6}
                 />
