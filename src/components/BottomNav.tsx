@@ -37,27 +37,20 @@ export default function BottomNav() {
   }, [user?.id]);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-premium border-t border-white/5 pb-[env(safe-area-inset-bottom)]">
-      <div className="flex items-center justify-around py-3 px-2 max-w-lg mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border/50 pb-[env(safe-area-inset-bottom)]">
+      <div className="flex items-center justify-between py-3 px-6 max-w-lg mx-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || (item.path === "/messages" && location.pathname.startsWith("/messages"));
           return (
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
-              className="relative flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-xl transition-colors"
+              className="relative flex flex-col items-center gap-1 transition-colors"
             >
-              {isActive && (
-                <motion.div
-                  layoutId="nav-indicator"
-                  className="absolute inset-0 bg-primary/10 rounded-xl"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
-              )}
               <div className="relative">
                 <item.icon size={20} className={isActive ? "text-primary" : "text-muted-foreground"} />
                 {item.badge && unread > 0 && (
-                  <span className="absolute -top-1 -right-1.5 min-w-[14px] h-[14px] px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">{unread > 9 ? "9+" : unread}</span>
+                  <span className="absolute -top-1 -right-1.5 w-2 h-2 rounded-full bg-primary" />
                 )}
               </div>
               <span className={`text-[10px] font-medium ${isActive ? "text-primary" : "text-muted-foreground"}`}>
@@ -68,5 +61,6 @@ export default function BottomNav() {
         })}
       </div>
     </nav>
+
   );
 }

@@ -102,15 +102,28 @@ export default function HomePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="glass-premium rounded-2xl p-5 mb-8 relative overflow-hidden"
+        className="bg-[hsl(var(--bg-success))] rounded-[14px] p-4 mb-4 flex items-center justify-between"
       >
-        <div className="absolute top-0 right-0 p-3 opacity-10">
-          <TrendingUp size={48} className="text-primary" />
+        <div className="flex items-center gap-2">
+          <Flame size={18} className="text-primary" />
+          <span className="text-sm font-medium text-primary">7 dias seguidos</span>
         </div>
-        <p className="text-sm text-foreground/90 italic font-medium leading-relaxed relative z-10">
-          "{quote}"
-        </p>
+        <div className="flex gap-1">
+          {[1, 2, 3].map(i => (
+            <span key={i} className="w-1.5 h-1.5 rounded-full bg-primary" />
+          ))}
+        </div>
       </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="bg-secondary border border-border/50 rounded-[14px] p-4 mb-6 italic text-sm text-muted-foreground"
+      >
+        "{quote}"
+      </motion.div>
+
 
       {!isProfileComplete && !loading && (
         <motion.button
@@ -129,40 +142,38 @@ export default function HomePage() {
         </motion.button>
       )}
 
-      <div className="flex items-end justify-between mb-4 px-1">
-        <h2 className="text-xl font-black font-display tracking-tight">Atividade</h2>
-        <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest bg-secondary/50 px-2 py-0.5 rounded-full border border-white/5">Auto-save on</span>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-base font-medium text-foreground">Atividade de hoje</h2>
+        <span className="text-[11px] text-muted-foreground font-medium">salvo automaticamente</span>
       </div>
-      <div className="grid grid-cols-2 gap-3 mb-6">
+
+      <div className="grid grid-cols-2 gap-3 mb-8">
         <EditableStatCard
           icon={Flame} label="Calorias" variant="primary"
           value={stats?.calories ?? 0} goal={stats?.calories_goal ?? 500} unit="kcal"
           quickSteps={[50, 200]}
           onChange={(v) => update({ calories: v })}
-          className="premium-card-hover"
         />
         <EditableStatCard
           icon={Footprints} label="Passos" variant="accent"
           value={stats?.steps ?? 0} goal={stats?.steps_goal ?? 10000}
           quickSteps={[500, 2000]}
           onChange={(v) => update({ steps: v })}
-          className="premium-card-hover"
         />
         <EditableStatCard
           icon={Timer} label="Tempo ativo"
           value={stats?.active_minutes ?? 0} goal={stats?.active_minutes_goal ?? 60} unit="min"
           quickSteps={[10, 30]}
           onChange={(v) => update({ active_minutes: v })}
-          className="premium-card-hover"
         />
         <EditableStatCard
           icon={Droplet} label="Água"
           value={stats?.water_ml ?? 0} goal={stats?.water_ml_goal ?? 2000} unit="ml"
           quickSteps={[250, 500]}
           onChange={(v) => update({ water_ml: v })}
-          className="premium-card-hover"
         />
       </div>
+
 
       <h2 className="text-lg font-bold font-display mb-3">Acesso Rápido</h2>
       <div className="grid grid-cols-2 gap-4 mb-8 stagger-load">
