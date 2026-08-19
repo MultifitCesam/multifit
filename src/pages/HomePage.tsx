@@ -124,9 +124,9 @@ export default function HomePage() {
         </motion.button>
       )}
 
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-lg font-bold font-display">Hoje</h2>
-        <span className="text-[10px] text-muted-foreground uppercase tracking-wide">toque para editar</span>
+      <div className="flex items-end justify-between mb-4 px-1">
+        <h2 className="text-xl font-black font-display tracking-tight">Atividade</h2>
+        <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest bg-secondary/50 px-2 py-0.5 rounded-full">Edição habilitada</span>
       </div>
       <div className="grid grid-cols-2 gap-3 mb-6">
         <EditableStatCard
