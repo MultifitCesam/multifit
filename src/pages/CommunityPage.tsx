@@ -640,18 +640,19 @@ export default function CommunityPage() {
               </div>
               <div className="p-3 border-t border-border/40 flex gap-2">
                 <input
+                  id="comment-input"
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && postComment()}
                   placeholder={user ? "Adicione um comentário..." : "Faça login para comentar"}
                   disabled={!user}
                   maxLength={500}
-                  className="flex-1 bg-secondary/60 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50"
+                  className="flex-1 bg-secondary/60 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-50 transition-transform duration-200"
                 />
                 <button
                   onClick={postComment}
                   disabled={!user || !commentText.trim()}
-                  className="bg-gradient-primary text-primary-foreground rounded-full px-4 py-2 text-sm font-bold disabled:opacity-40"
+                  className="bg-gradient-primary text-primary-foreground rounded-full px-4 py-2 text-sm font-bold disabled:opacity-40 active:scale-90 transition-transform"
                 >
                   <Send size={14} />
                 </button>
