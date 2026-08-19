@@ -456,44 +456,46 @@ export default function CommunityPage() {
               )}
 
               {display.caption && (
-                <p className="text-sm leading-relaxed px-4 pt-3">
-                  <span className="font-bold mr-2">{display.author?.name}</span>
+                <p className="text-[13px] leading-relaxed px-4 pt-3 text-foreground font-normal">
+                  <span className="font-semibold mr-2">{display.author?.name}</span>
                   {display.caption}
                 </p>
               )}
 
-              <div className="flex items-center gap-5 px-4 py-3">
+
+              <div className="flex items-center gap-5 px-4 py-4">
                 <ActionBtn 
                   onClick={() => toggleLike(post)} 
                   active={post.liked} 
-                  activeClass="text-neon-pink"
-                  className="like-btn transition-transform duration-200"
+                  activeClass="text-[hsl(var(--destructive))]"
+                  className="transition-transform duration-200"
                 >
                   <motion.span
                     key={String(post.liked)}
                     initial={{ scale: 1 }}
-                    animate={post.liked ? { scale: [1, 1.4, 0.9, 1.15, 1] } : { scale: 1 }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    animate={post.liked ? { scale: [1, 1.3, 0.95, 1.1, 1] } : { scale: 1 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
                     className="inline-flex"
                   >
-                    <Heart size={18} className={post.liked ? "fill-neon-pink text-neon-pink" : ""} />
+                    <Heart size={20} className={post.liked ? "fill-destructive text-destructive" : "text-muted-foreground"} />
                   </motion.span>
-                  <span className="text-xs">{post.likes_count}</span>
+                  <span className="text-[12px] font-medium">{post.likes_count}</span>
                 </ActionBtn>
 
-                <ActionBtn onClick={() => openComments(post.id)} className="hover:text-primary transition-colors">
-                  <MessageCircle size={18} />
-                  <span className="text-xs">{post.comments_count}</span>
+                <ActionBtn onClick={() => openComments(post.id)} className="text-muted-foreground hover:text-foreground">
+                  <MessageCircle size={20} />
+                  <span className="text-[12px] font-medium">{post.comments_count}</span>
                 </ActionBtn>
                 
-                <ActionBtn onClick={() => repost(post)} className="hover:text-primary transition-colors active:rotate-180 duration-500">
-                  <Repeat2 size={18} />
-                  <span className="text-xs">{post.reposts_count}</span>
+                <ActionBtn onClick={() => repost(post)} className="text-muted-foreground hover:text-foreground active:rotate-180 duration-500">
+                  <Repeat2 size={20} />
+                  <span className="text-[12px] font-medium">{post.reposts_count}</span>
                 </ActionBtn>
-                <ActionBtn onClick={() => share(post)} className="ml-auto">
-                  <Share2 size={18} />
+                <ActionBtn onClick={() => share(post)} className="ml-auto text-muted-foreground hover:text-foreground">
+                  <Share2 size={20} />
                 </ActionBtn>
               </div>
+
             </motion.article>
           );
         })}
@@ -514,8 +516,9 @@ export default function CommunityPage() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 60, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg glass rounded-2xl p-5"
+              className="w-full max-w-lg bg-secondary border border-border/50 rounded-[20px] p-6"
             >
+
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold">Nova postagem</h2>
                 <button onClick={clearComposer} className="text-muted-foreground">
@@ -529,8 +532,9 @@ export default function CommunityPage() {
                 placeholder="O que você está treinando hoje?"
                 rows={3}
                 maxLength={500}
-                className="w-full bg-secondary/50 rounded-xl p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/40"
+                className="w-full bg-background border border-border/50 rounded-[14px] p-4 text-[13px] resize-none focus:outline-none focus:ring-1 focus:ring-primary/50"
               />
+
 
               {previewUrl && (
                 <div className="relative mt-3">
@@ -563,18 +567,19 @@ export default function CommunityPage() {
               <div className="flex items-center justify-between mt-4">
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 text-sm text-muted-foreground bg-secondary/60 px-3 py-2 rounded-lg hover:text-foreground"
+                  className="flex items-center gap-2 text-[12px] text-muted-foreground bg-background border border-border/50 px-4 py-2 rounded-xl hover:text-foreground transition-all"
                 >
                   <ImagePlus size={16} /> Foto / vídeo
                 </button>
                 <button
                   onClick={publish}
                   disabled={uploading}
-                  className="bg-gradient-primary text-primary-foreground text-sm font-bold px-5 py-2 rounded-full flex items-center gap-2 disabled:opacity-50"
+                  className="bg-primary text-primary-foreground text-sm font-semibold px-6 py-2.5 rounded-xl flex items-center gap-2 disabled:opacity-50"
                 >
                   {uploading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                   Publicar
                 </button>
+
               </div>
             </motion.div>
           </motion.div>
@@ -596,8 +601,9 @@ export default function CommunityPage() {
               animate={{ y: 0 }}
               exit={{ y: 80 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg glass rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[80vh]"
+              className="w-full max-w-lg bg-secondary border-t border-x border-border/50 rounded-t-[24px] sm:rounded-[24px] sm:border flex flex-col max-h-[85vh]"
             >
+
               <div className="flex items-center justify-between p-4 border-b border-border/40">
                 <h2 className="font-bold">Comentários</h2>
                 <button onClick={() => setActiveComments(null)} className="text-muted-foreground">
