@@ -156,7 +156,8 @@ export default function HomePage() {
           { icon: Dumbbell, label: "Meu Treino", path: "/workouts", color: "primary" },
           { icon: Bot, label: "Falar c/ Coach", path: "/chat", color: "accent" },
           { icon: Apple, label: "Nutrição", path: "/nutrition", color: "primary" },
-          { icon: TrendingUp, label: "Progresso", path: "/dashboard", color: "accent" },
+          { icon: TrendingUp, label: "Evolução", path: "/dashboard", color: "accent" },
+
         ].map((item, i) => (
           <motion.button
             key={item.label}
