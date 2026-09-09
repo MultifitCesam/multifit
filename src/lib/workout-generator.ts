@@ -24,6 +24,8 @@ export interface Exercise {
   videoUrl?: string;
   description: string;
   muscleGroup: string;
+  /** Instrução extra adaptada ao perfil (ex.: mulheres, objetivo, nível) */
+  tip?: string;
 }
 
 export interface WorkoutDay {
