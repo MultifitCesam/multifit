@@ -74,7 +74,10 @@ function WorkoutDayCard({ day, index, onStart }: { day: WorkoutDay; index: numbe
                     <span className="text-[10px] text-primary font-medium uppercase px-2 py-0.5">{ex.muscleGroup}</span>
                     <ExerciseVideo exerciseName={ex.name} />
                   </div>
-                  <p className="text-[12px] text-muted-foreground font-normal leading-relaxed mb-3">{ex.description}</p>
+                  <p className="text-[12px] text-muted-foreground font-normal leading-relaxed mb-2">{ex.description}</p>
+                  {ex.tip && (
+                    <p className="text-[12px] text-primary leading-relaxed mb-3">💡 {ex.tip}</p>
+                  )}
                   <div className="flex gap-4 text-[11px] text-muted-foreground font-medium uppercase">
                     <span className="flex items-center gap-1.5"><Dumbbell size={14} /> {ex.sets}x{ex.reps}</span>
                     <span className="flex items-center gap-1.5"><Clock size={14} /> {ex.rest}</span>
