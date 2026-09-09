@@ -24,6 +24,8 @@ export interface Exercise {
   videoUrl?: string;
   description: string;
   muscleGroup: string;
+  /** Instrução extra adaptada ao perfil (ex.: mulheres, objetivo, nível) */
+  tip?: string;
 }
 
 export interface WorkoutDay {
@@ -151,6 +153,47 @@ const femaleAccessory: Record<string, Exercise[]> = {
   ],
 };
 
+const clone = (list: Exercise[]): Exercise[] => list.map(e => ({ ...e }));
+
+// Ajuste de séries/repetições/descanso por objetivo — nada exagerado, coerente com a meta
+function applyGoal(ex: Exercise, goal: UserProfile["goal"], isFemale: boolean): Exercise {
+  const e = { ...ex };
+  if (e.muscleGroup === "Cardio") return e;
+
+  if (goal === "emagrecimento") {
+    e.reps = e.reps.includes("min") ? e.reps : "12-15";
+    e.rest = "45s";
+    e.tip = "Ritmo contínuo e descanso curto para manter o gasto calórico alto.";
+  } else if (goal === "hipertrofia") {
+    e.reps = e.reps.includes("min") ? e.reps : "8-12";
+    e.rest = "75s";
+    e.tip = "Foque na fase de descida (3s) e pare a 1-2 repetições da falha.";
+  } else if (goal === "condicionamento") {
+    e.reps = e.reps.includes("min") ? e.reps : "15";
+    e.rest = "40s";
+    e.tip = "Faça em circuito, sem pressa, priorizando a técnica.";
+  } else if (goal === "saude_mental") {
+    e.sets = Math.max(2, e.sets - 1);
+    e.rest = "60s";
+    e.tip = "Respire fundo entre as séries; o objetivo é sair melhor do que entrou.";
+  } else if (goal === "alta_performance") {
+    e.reps = e.reps.includes("min") ? e.reps : "6-10";
+    e.rest = "90s";
+    e.tip = "Carga desafiadora com execução perfeita; registre os pesos para evoluir.";
+  }
+
+  if (isFemale) {
+    if (e.muscleGroup === "Glúteos") {
+      e.tip = "Empurre pelo calcanhar e segure 1s na contração máxima do glúteo.";
+    } else if (e.muscleGroup === "Posterior") {
+      e.tip = "Coluna neutra, quadril para trás; sinta o alongamento atrás da coxa.";
+    } else if (e.muscleGroup === "Core") {
+      e.tip = "Mantenha o abdômen contraído e não prenda a respiração.";
+    }
+  }
+  return e;
+}
+
 export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
   const { gender, level, goal, bodyType, sleepHours, sleepQuality, weeklyFrequency, trainingTime } = profile;
   const isFemale = gender === "feminino";
@@ -162,13 +205,40 @@ export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
     5: [["peito"], ["costas"], ["pernas"], ["ombros"], ["bracos"]],
     6: [["peito"], ["costas"], ["pernas"], ["ombros"], ["bracos"], ["pernas"]],
   };
-  const splitsFemale: Record<number, string[][]> = {
-    3: [["gluteos"], ["costas", "bracos"], ["pernas"]],
-    4: [["gluteos"], ["costas"], ["pernas"], ["peito", "ombros"]],
-    5: [["gluteos"], ["costas"], ["pernas"], ["gluteos"], ["peito", "bracos"]],
-    6: [["gluteos"], ["costas"], ["pernas"], ["gluteos"], ["peito", "ombros"], ["bracos"]],
+  // Divisões femininas por objetivo — equilibradas, sem volume exagerado
+  const femaleByGoal: Record<string, Record<number, string[][]>> = {
+    hipertrofia: {
+      3: [["gluteos"], ["costas", "bracos"], ["pernas"]],
+      4: [["gluteos"], ["costas"], ["pernas"], ["peito", "ombros"]],
+      5: [["gluteos"], ["costas"], ["pernas"], ["gluteos"], ["peito", "bracos"]],
+      6: [["gluteos"], ["costas"], ["pernas"], ["gluteos"], ["peito", "ombros"], ["bracos"]],
+    },
+    emagrecimento: {
+      3: [["gluteos"], ["costas", "bracos"], ["pernas"]],
+      4: [["gluteos"], ["costas", "ombros"], ["pernas"], ["peito", "bracos"]],
+      5: [["gluteos"], ["costas"], ["pernas"], ["ombros", "bracos"], ["gluteos"]],
+      6: [["gluteos"], ["costas"], ["pernas"], ["ombros", "bracos"], ["gluteos"], ["peito"]],
+    },
+    condicionamento: {
+      3: [["pernas"], ["costas", "ombros"], ["gluteos"]],
+      4: [["pernas"], ["costas"], ["gluteos"], ["peito", "bracos"]],
+      5: [["pernas"], ["costas"], ["gluteos"], ["ombros"], ["peito", "bracos"]],
+      6: [["pernas"], ["costas"], ["gluteos"], ["ombros"], ["peito"], ["bracos"]],
+    },
+    saude_mental: {
+      3: [["pernas"], ["costas", "bracos"], ["gluteos"]],
+      4: [["gluteos"], ["costas"], ["pernas"], ["ombros", "bracos"]],
+      5: [["gluteos"], ["costas"], ["pernas"], ["peito", "ombros"], ["bracos"]],
+      6: [["gluteos"], ["costas"], ["pernas"], ["peito", "ombros"], ["bracos"], ["gluteos"]],
+    },
+    alta_performance: {
+      3: [["pernas"], ["costas", "ombros"], ["gluteos"]],
+      4: [["gluteos"], ["costas"], ["pernas"], ["peito", "ombros"]],
+      5: [["gluteos"], ["costas"], ["pernas"], ["ombros", "bracos"], ["gluteos"]],
+      6: [["gluteos"], ["costas"], ["pernas"], ["ombros"], ["gluteos"], ["peito", "bracos"]],
+    },
   };
-  const splits = isFemale ? splitsFemale : splitsMale;
+  const splits = isFemale ? (femaleByGoal[goal] || femaleByGoal.hipertrofia) : splitsMale;
 
 
   const freq = Math.max(3, Math.min(6, weeklyFrequency));
@@ -178,41 +248,46 @@ export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
   const weeklyPlan: WorkoutDay[] = [];
 
   split.forEach((muscles, i) => {
-    const exercises: Exercise[] = [];
+    let exercises: Exercise[] = [];
     muscles.forEach(m => {
       if (m === "gluteos") {
-        exercises.push(...femaleAccessory.gluteos.slice(0, level === "iniciante" ? 3 : 4));
-        exercises.push(...femaleAccessory.posterior.slice(0, 1));
+        exercises.push(...clone(femaleAccessory.gluteos).slice(0, level === "iniciante" ? 3 : 4));
+        exercises.push(...clone(femaleAccessory.posterior).slice(0, 1));
       } else {
-        exercises.push(...getExercises(m, level));
+        exercises.push(...clone(getExercises(m, level)));
       }
     });
 
     // Women: always add a glute or core accessory on leg days for extra focus
     if (isFemale && muscles.includes("pernas")) {
-      exercises.push(femaleAccessory.gluteos[0]);
+      exercises.push({ ...femaleAccessory.gluteos[0] });
     }
     // Women: add core finisher 2x per week
     if (isFemale && (i === 1 || i === 4)) {
-      exercises.push(...femaleAccessory.core.slice(0, 2));
+      exercises.push(...clone(femaleAccessory.core).slice(0, 2));
     }
 
     // Add cardio for emagrecimento
     if (goal === "emagrecimento" && i % 2 === 0) {
-      exercises.push(...exerciseDB.cardio.slice(0, 1));
+      exercises.push(...clone(exerciseDB.cardio).slice(0, 1));
     }
 
     // Add functional for condicionamento
     if (goal === "condicionamento") {
-      exercises.push(...exerciseDB.funcional.slice(0, 2));
+      exercises.push(...clone(exerciseDB.funcional).slice(0, 2));
+    }
+
+    // Instruções e volume adaptados ao objetivo (e ao perfil feminino)
+    exercises = exercises.map(e => applyGoal(e, goal, isFemale));
+
+    // Iniciantes: um pouco menos de volume, sem exagero
+    if (level === "iniciante") {
+      exercises = exercises.map(e => ({ ...e, sets: Math.max(2, Math.min(e.sets, 3)) }));
     }
 
     // Reduce intensity if poor sleep
     if (sleepQuality === "ruim" || sleepHours < 6) {
-      exercises.forEach(e => {
-        e.sets = Math.max(2, e.sets - 1);
-        e.rest = "90s";
-      });
+      exercises = exercises.map(e => ({ ...e, sets: Math.max(2, e.sets - 1), rest: "90s" }));
     }
 
 
@@ -250,7 +325,11 @@ export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
   const goalLabel = { emagrecimento: "emagrecimento", hipertrofia: "hipertrofia", condicionamento: "condicionamento", saude_mental: "saúde mental", alta_performance: "alta performance" }[goal];
   const bodyLabel = { ectomorfo: "ectomorfo", mesomorfo: "mesomorfo", endomorfo: "endomorfo" }[bodyType];
 
-  const explanation = `Plano criado para perfil ${levelLabel}, com foco em ${goalLabel}. ` +
+  const femaleNote = isFemale
+    ? `Estrutura feminina: prioridade em glúteos, posterior e core, com volume equilibrado para membros superiores. `
+    : "";
+
+  const explanation = femaleNote + `Plano criado para perfil ${levelLabel}, com foco em ${goalLabel}. ` +
     `Biotipo ${bodyLabel}: ${bodyType === "ectomorfo" ? "prioridade em cargas pesadas e descanso" : bodyType === "endomorfo" ? "mais cardio e circuitos" : "treino equilibrado"}. ` +
     `${sleepQuality === "ruim" ? "Intensidade reduzida devido à qualidade do sono." : ""} ` +
     `Treinos ajustados para o período da ${trainingTime === "manha" ? "manhã" : trainingTime === "tarde" ? "tarde" : "noite"}.`;

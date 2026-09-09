@@ -30,6 +30,18 @@ const CURATED: Record<string, string> = {
   "Tríceps Pulley": "vB5OHsJ3EME",
   "Prancha Abdominal": "ASdvN_XEl_c",
   "Burpee": "TU8QYVW0gDU",
+  "Búlgaro": "2C-uNgKwPLE",
+  "Coice na Polia": "SqO-VUEak2M",
+  "Mesa Flexora": "1Tq3QdYUuHs",
+  "Stiff com Halteres": "2SHsk9AzdjA",
+  "Abdominal Bicicleta": "9FGilxCbdz8",
+  "Russian Twist": "wkD8rjkodUI",
+  "Avanço": "QOVaHwm-Q6U",
+  "Remada Unilateral": "pYcpY20QaE8",
+  "Elevação Frontal": "hRJ6tR5-if0",
+  "Crucifixo": "eozdVDA78K0",
+  "Mountain Climber": "nmwgirgXLYM",
+  "Kettlebell Swing": "YSxHifyI6s8",
 };
 
 export function getExerciseEmbedUrl(exerciseName: string): string | null {

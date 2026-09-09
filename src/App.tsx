@@ -21,6 +21,7 @@ import NotificationsPage from "./pages/NotificationsPage";
 import NotFound from "./pages/NotFound";
 import OnboardingPage from "./pages/OnboardingPage";
 import WorkoutSessionPage from "./pages/WorkoutSessionPage";
+import GoalsPage from "./pages/GoalsPage";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,8 @@ const App = () => (
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
             <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+            <Route path="/goals" element={<ProtectedRoute><GoalsPage /></ProtectedRoute>} />
+            <Route path="/objetivos" element={<ProtectedRoute><GoalsPage /></ProtectedRoute>} />
             <Route path="/workouts" element={<ProtectedRoute><WorkoutsPage /></ProtectedRoute>} />
             <Route path="/workouts/session" element={<ProtectedRoute><WorkoutSessionPage /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
