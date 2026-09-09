@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, Dumbbell, Play, Clock, Zap, RefreshCw } from "lucide-react";
+import { ChevronDown, ChevronUp, Dumbbell, Play, Clock, Zap, RefreshCw, Target } from "lucide-react";
 import BottomNav from "@/components/BottomNav";
 import ExerciseVideo from "@/components/ExerciseVideo";
 import { useProfile } from "@/hooks/useProfile";
@@ -131,11 +131,16 @@ export default function WorkoutsPage() {
     <div className="min-h-screen pb-24 px-5 pt-8 max-w-lg mx-auto bg-background">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-xl font-medium text-foreground">Meus treinos</h1>
-        {plan && (
-          <button onClick={handleGenerate} className="p-2.5 rounded-xl bg-secondary border border-border/50 text-muted-foreground active:scale-95 transition-all">
-            <RefreshCw size={18} />
+        <div className="flex items-center gap-2">
+          <button onClick={() => nav("/goals")} className="px-3 py-2.5 rounded-xl bg-secondary border border-border/50 text-[12px] text-muted-foreground active:scale-95 transition-all flex items-center gap-1.5">
+            <Target size={14} /> Objetivos
           </button>
-        )}
+          {plan && (
+            <button onClick={handleGenerate} className="p-2.5 rounded-xl bg-secondary border border-border/50 text-muted-foreground active:scale-95 transition-all">
+              <RefreshCw size={18} />
+            </button>
+          )}
+        </div>
       </div>
 
       {!plan ? (
