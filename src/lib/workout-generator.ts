@@ -325,7 +325,11 @@ export function generateWorkoutPlan(profile: UserProfile): WorkoutPlan {
   const goalLabel = { emagrecimento: "emagrecimento", hipertrofia: "hipertrofia", condicionamento: "condicionamento", saude_mental: "saúde mental", alta_performance: "alta performance" }[goal];
   const bodyLabel = { ectomorfo: "ectomorfo", mesomorfo: "mesomorfo", endomorfo: "endomorfo" }[bodyType];
 
-  const explanation = `Plano criado para perfil ${levelLabel}, com foco em ${goalLabel}. ` +
+  const femaleNote = isFemale
+    ? `Estrutura feminina: prioridade em glúteos, posterior e core, com volume equilibrado para membros superiores. `
+    : "";
+
+  const explanation = femaleNote + `Plano criado para perfil ${levelLabel}, com foco em ${goalLabel}. ` +
     `Biotipo ${bodyLabel}: ${bodyType === "ectomorfo" ? "prioridade em cargas pesadas e descanso" : bodyType === "endomorfo" ? "mais cardio e circuitos" : "treino equilibrado"}. ` +
     `${sleepQuality === "ruim" ? "Intensidade reduzida devido à qualidade do sono." : ""} ` +
     `Treinos ajustados para o período da ${trainingTime === "manha" ? "manhã" : trainingTime === "tarde" ? "tarde" : "noite"}.`;
