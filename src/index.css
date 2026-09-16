@@ -106,6 +106,90 @@
   .light .leaflet-tile { filter: none; }
 }
 
+@layer components {
+  .profile-theme {
+    --background: 75 20% 4%;
+    --foreground: 73 33% 94%;
+    --secondary: 75 21% 7%;
+    --secondary-foreground: 73 33% 94%;
+    --muted: 75 22% 10%;
+    --muted-foreground: 76 9% 55%;
+    --border: 77 24% 15%;
+    --input: 77 24% 15%;
+    --primary: 74 86% 59%;
+    --primary-foreground: 76 41% 4%;
+    --ring: 74 86% 59%;
+    --profile-orange: 14 100% 61%;
+    --profile-orange-dark: 14 75% 43%;
+    --profile-forest: 78 45% 21%;
+    --profile-faint: 78 9% 35%;
+  }
+
+  .profile-display { font-family: "Bricolage Grotesque Variable", sans-serif; }
+
+  .profile-identity {
+    @apply mb-6 flex items-end gap-4 border-b border-border/70 px-0.5 pb-6;
+  }
+
+  .profile-avatar {
+    @apply relative grid h-[76px] w-[76px] shrink-0 place-items-center overflow-visible text-[30px] font-bold text-primary-foreground;
+    font-family: "Bricolage Grotesque Variable", sans-serif;
+    border-radius: 20px;
+    background: linear-gradient(155deg, hsl(var(--profile-orange)), hsl(var(--profile-orange-dark)));
+    box-shadow: 0 12px 26px -14px hsl(var(--profile-orange) / 0.65);
+  }
+
+  .profile-avatar > img { border-radius: 20px; }
+  .profile-camera { @apply absolute -bottom-1.5 -right-1.5 h-7 w-7 rounded-lg border-[3px] border-background bg-primary text-primary-foreground; }
+  .profile-camera svg { @apply h-3 w-3; }
+  .profile-badge { @apply rounded-full border px-2.5 py-1 text-[11px] font-semibold; }
+  .profile-badge-level { @apply border-primary/30 bg-primary/10 text-primary; }
+  .profile-badge-goal { color: hsl(var(--profile-orange)); border-color: hsl(var(--profile-orange) / 0.3); background: hsl(var(--profile-orange) / 0.1); }
+
+  .profile-ticker { @apply mb-8 grid grid-cols-3 overflow-hidden rounded-[16px] border border-border bg-border; gap: 1px; }
+  .profile-metric { @apply min-w-0 bg-secondary px-3 py-3.5; }
+  .profile-input { @apply w-full rounded-[14px] border border-border bg-secondary px-4 py-3 text-[14px] text-foreground outline-none transition-colors placeholder:text-muted-foreground/50 focus:border-primary focus:ring-2 focus:ring-primary/20; }
+
+  .profile-switch { @apply h-6 w-10 shrink-0 rounded-full bg-muted p-1 transition-colors; }
+  .profile-switch span { @apply block h-4 w-4 rounded-full bg-muted-foreground transition-transform; }
+  .profile-switch.is-on { @apply bg-primary; }
+  .profile-switch.is-on span { @apply translate-x-4 bg-primary-foreground; }
+
+  .profile-segmented { @apply flex gap-1 rounded-[14px] border border-border bg-secondary p-1; }
+  .profile-segment { @apply flex min-h-14 flex-1 flex-col items-center justify-center rounded-[10px] px-1 text-[12px] font-semibold text-muted-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring; }
+  .profile-segment small { @apply mt-0.5 text-[10px] font-normal text-muted-foreground/60; }
+  .profile-segment.is-active { @apply bg-muted text-primary ring-1 ring-primary/30; box-shadow: 0 8px 18px -12px hsl(var(--primary) / 0.5); }
+  .profile-segment.is-active small { @apply text-primary/60; }
+
+  .profile-chip { @apply flex min-h-10 items-center gap-2 rounded-full border border-border bg-secondary px-3.5 text-[13px] font-medium text-muted-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring; }
+  .profile-chip > span { @apply h-1.5 w-1.5 rounded-full bg-muted-foreground/60; }
+  .profile-chip.is-active { @apply border-primary/40 bg-primary/10 text-foreground; }
+  .profile-chip.is-active > span { @apply bg-primary; }
+
+  .profile-biotypes { @apply overflow-hidden rounded-[16px] border border-border; }
+  .profile-biotype { @apply relative flex min-h-[68px] w-full items-center justify-between gap-3 border-b border-border bg-secondary px-4 py-3.5 outline-none transition-colors last:border-b-0 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring; }
+  .profile-biotype strong { @apply block text-[14px] font-semibold text-foreground; }
+  .profile-biotype small { @apply mt-0.5 block text-[12px] text-muted-foreground/60; }
+  .profile-biotype.is-active { @apply bg-muted; }
+  .profile-biotype.is-active strong { @apply text-primary; }
+  .profile-biotype-bar { @apply absolute inset-y-0 left-0 w-[3px] bg-transparent; }
+  .profile-biotype.is-active .profile-biotype-bar { @apply bg-primary; }
+  .profile-check { @apply grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full border border-border text-primary-foreground; }
+  .profile-biotype.is-active .profile-check { @apply border-primary bg-primary; }
+
+  .profile-range { @apply block h-5 w-full cursor-pointer appearance-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-ring; }
+  .profile-range::-webkit-slider-runnable-track { height: 5px; border-radius: 999px; background: linear-gradient(90deg, hsl(var(--profile-forest)), hsl(var(--primary))); }
+  .profile-range::-webkit-slider-thumb { width: 16px; height: 16px; margin-top: -5.5px; appearance: none; border-radius: 999px; background: hsl(var(--foreground)); border: 3px solid hsl(var(--background)); box-shadow: 0 0 0 1px hsl(var(--primary)); }
+  .profile-range::-moz-range-track { height: 5px; border-radius: 999px; background: linear-gradient(90deg, hsl(var(--profile-forest)), hsl(var(--primary))); }
+  .profile-range::-moz-range-thumb { width: 12px; height: 12px; border-radius: 999px; background: hsl(var(--foreground)); border: 3px solid hsl(var(--background)); box-shadow: 0 0 0 1px hsl(var(--primary)); }
+
+  .profile-choice-row { @apply flex gap-2; }
+  .profile-choice-row button { @apply flex min-h-[58px] flex-1 flex-col items-center justify-center rounded-xl border border-border bg-background px-1 text-[11px] text-muted-foreground outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring; }
+  .profile-choice-row button span { @apply mb-1 block text-base; }
+  .profile-choice-row button.is-active { @apply border-primary/40 bg-primary/10 text-primary; }
+  .profile-save { @apply bg-primary text-primary-foreground hover:bg-primary/90; box-shadow: 0 16px 30px -14px hsl(var(--primary) / 0.55); }
+}
+
 @layer base {
   * {
     @apply border-border;

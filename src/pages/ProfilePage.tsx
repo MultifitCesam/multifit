@@ -1,40 +1,41 @@
-import { useState, useEffect, useRef } from "react";
-import { SafeImg, SafeVideo } from "@/components/SafeMedia";
-import { motion } from "framer-motion";
-import { User, Save, Loader2, Camera, LogOut, Apple, Settings, Lock, Globe, ExternalLink } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import "@fontsource-variable/bricolage-grotesque";
+import { Apple, Camera, Check, ExternalLink, Globe, Loader2, Lock, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { SafeImg } from "@/components/SafeMedia";
 import BottomNav from "@/components/BottomNav";
 import SmartwatchPanel from "@/components/SmartwatchPanel";
 import ThemeToggle from "@/components/ThemeToggle";
+import { Button } from "@/components/ui/button";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 const levels = [
-  { value: "iniciante", label: "Iniciante", emoji: "🌱", desc: "Começando agora" },
-  { value: "intermediario", label: "Intermediário", emoji: "💪", desc: "Já treina há um tempo" },
-  { value: "avancado", label: "Avançado", emoji: "🔥", desc: "Treina há anos" },
+  { value: "iniciante", label: "Iniciante", desc: "começando" },
+  { value: "intermediario", label: "Intermediário", desc: "há um tempo" },
+  { value: "avancado", label: "Avançado", desc: "há anos" },
 ] as const;
 
 const goals = [
-  { value: "emagrecimento", label: "Emagrecer", emoji: "⚖️" },
-  { value: "hipertrofia", label: "Hipertrofia", emoji: "🏋️" },
-  { value: "condicionamento", label: "Condicionamento", emoji: "🏃" },
-  { value: "saude_mental", label: "Saúde Mental", emoji: "🧘" },
-  { value: "alta_performance", label: "Performance", emoji: "🏆" },
+  { value: "emagrecimento", label: "Emagrecer" },
+  { value: "hipertrofia", label: "Hipertrofia" },
+  { value: "condicionamento", label: "Condicionamento" },
+  { value: "saude_mental", label: "Saúde mental" },
+  { value: "alta_performance", label: "Performance" },
 ] as const;
 
 const bodyTypes = [
   { value: "ectomorfo", label: "Ectomorfo", desc: "Magro, dificuldade em ganhar peso" },
-  { value: "mesomorfo", label: "Mesomorfo", desc: "Atlético, ganha músculo facilmente" },
+  { value: "mesomorfo", label: "Mesomorfo", desc: "Atlético, ganha músculo com facilidade" },
   { value: "endomorfo", label: "Endomorfo", desc: "Mais robusto, ganha peso rápido" },
 ] as const;
 
 const sleepQualities = [
   { value: "ruim", label: "Ruim", emoji: "😫" },
   { value: "regular", label: "Regular", emoji: "😐" },
-  { value: "boa", label: "Boa", emoji: "😊" },
+  { value: "boa", label: "Boa", emoji: "🙂" },
   { value: "excelente", label: "Excelente", emoji: "😴" },
 ] as const;
 
@@ -43,67 +44,6 @@ const trainingTimes = [
   { value: "tarde", label: "Tarde", emoji: "☀️" },
   { value: "noite", label: "Noite", emoji: "🌙" },
 ] as const;
-
-function CardChips<T extends string>({
-  options,
-  value,
-  onChange,
-  cols = 3,
-}: {
-  options: readonly { value: T; label: string; emoji?: string; desc?: string }[];
-  value: T;
-  onChange: (v: T) => void;
-  cols?: number;
-}) {
-  return (
-    <div className={`grid gap-2 grid-cols-${cols}`} style={{ gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))` }}>
-      {options.map((opt) => {
-        const active = value === opt.value;
-        return (
-          <motion.button
-            key={opt.value}
-            type="button"
-            whileTap={{ scale: 0.95 }}
-            onClick={() => onChange(opt.value)}
-            className={`relative p-3 rounded-xl text-left transition-all border ${
-              active
-                ? "bg-[hsl(var(--bg-success))] border-primary text-foreground"
-                : "bg-secondary border-border/50 text-muted-foreground hover:text-foreground"
-            }`}
-
-          >
-            {opt.emoji && <div className="text-xl mb-1">{opt.emoji}</div>}
-            <div className={`text-[12px] font-medium ${active ? "text-primary" : ""}`}>{opt.label}</div>
-            {opt.desc && <div className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">{opt.desc}</div>}
-
-          </motion.button>
-        );
-      })}
-    </div>
-  );
-}
-
-function NumberStepper({ value, onChange, min, max, step = 1, suffix }: { value: number; onChange: (v: number) => void; min: number; max: number; step?: number; suffix?: string }) {
-  return (
-    <div className="flex items-center bg-secondary border border-border/50 rounded-xl overflow-hidden">
-      <button
-        type="button"
-        onClick={() => onChange(Math.max(min, value - step))}
-        className="px-4 py-3 text-lg text-muted-foreground hover:text-foreground hover:bg-background/40 transition"
-      >−</button>
-      <div className="flex-1 text-center font-medium text-sm">
-        {value}{suffix && <span className="text-[10px] text-muted-foreground ml-0.5">{suffix}</span>}
-      </div>
-
-      <button
-        type="button"
-        onClick={() => onChange(Math.min(max, value + step))}
-        className="px-4 py-3 text-lg text-muted-foreground hover:text-foreground hover:bg-background/40 transition"
-      >+</button>
-
-    </div>
-  );
-}
 
 export default function ProfilePage() {
   const { profile, updateProfile, loading } = useProfile();
@@ -119,42 +59,34 @@ export default function ProfilePage() {
   }, [profile]);
 
   if (loading || !local) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-primary" />
-      </div>
-    );
+    return <div className="profile-theme min-h-screen grid place-items-center"><Loader2 className="animate-spin text-primary" aria-label="Carregando perfil" /></div>;
   }
 
-  const set = (updates: Partial<typeof local>) => setLocal({ ...local!, ...updates });
+  const set = (updates: Partial<typeof local>) => setLocal((current) => current ? { ...current, ...updates } : current);
 
-  const handleAvatarPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleAvatarPick = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file || !user) return;
     if (!file.type.startsWith("image/")) {
       toast({ title: "Selecione uma imagem", variant: "destructive" });
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast({ title: "Imagem muito grande", description: "Máximo 5MB", variant: "destructive" });
+      toast({ title: "Imagem muito grande", description: "Máximo 5 MB", variant: "destructive" });
       return;
     }
     setUploadingAvatar(true);
     try {
       const ext = file.name.split(".").pop() || "jpg";
       const path = `${user.id}/avatar-${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, {
-        contentType: file.type,
-        upsert: true,
-      });
-      if (upErr) throw upErr;
+      const { error } = await supabase.storage.from("avatars").upload(path, file, { contentType: file.type, upsert: true });
+      if (error) throw error;
       const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-      const url = data.publicUrl;
-      set({ avatar_url: url });
-      await updateProfile({ avatar_url: url });
-      toast({ title: "Foto atualizada! ✨" });
-    } catch (err: any) {
-      toast({ title: "Erro ao enviar foto", description: err?.message, variant: "destructive" });
+      set({ avatar_url: data.publicUrl });
+      await updateProfile({ avatar_url: data.publicUrl });
+      toast({ title: "Foto atualizada" });
+    } catch (error) {
+      toast({ title: "Erro ao enviar foto", description: error instanceof Error ? error.message : undefined, variant: "destructive" });
     } finally {
       setUploadingAvatar(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -162,274 +94,152 @@ export default function ProfilePage() {
   };
 
   const handleSave = async () => {
-    setSaving(true);
     const username = (local.username || "").trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");
     if (username.length < 3) {
-      toast({ title: "Username muito curto", description: "Mínimo 3 caracteres (a-z, 0-9, _)", variant: "destructive" });
-      setSaving(false); return;
+      toast({ title: "Nome de usuário muito curto", description: "Use ao menos 3 caracteres.", variant: "destructive" });
+      return;
     }
+    setSaving(true);
     await updateProfile({
-      username,
-      is_private: local.is_private,
-      name: local.name,
-      bio: local.bio,
-      age: local.age,
-      weight: local.weight,
-      height: local.height,
-      level: local.level,
-      goal: local.goal,
-      body_type: local.body_type,
-      sleep_hours: local.sleep_hours,
-      sleep_quality: local.sleep_quality,
-      weekly_frequency: local.weekly_frequency,
+      username, is_private: local.is_private, name: local.name, bio: local.bio,
+      age: local.age, weight: local.weight, height: local.height, level: local.level,
+      goal: local.goal, body_type: local.body_type, sleep_hours: local.sleep_hours,
+      sleep_quality: local.sleep_quality, weekly_frequency: local.weekly_frequency,
       training_time: local.training_time,
     });
     setSaving(false);
-    toast({ title: "Perfil salvo! ✅" });
+    toast({ title: "Perfil salvo" });
   };
 
+  const initials = (local.name || local.username || "M").trim().charAt(0).toUpperCase();
+  const selectedLevel = levels.find((item) => item.value === local.level)?.label || local.level;
+  const selectedGoal = goals.find((item) => item.value === local.goal)?.label || local.goal;
+
   return (
-    <div className="min-h-screen pb-28 px-5 pt-8 max-w-lg mx-auto bg-background">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-xl font-medium text-foreground">Meu perfil</h1>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <button
-            onClick={async () => { await signOut(); navigate("/auth"); }}
-            className="p-2.5 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:text-destructive transition-all"
-            aria-label="Sair"
-          >
-            <LogOut size={16} />
-          </button>
-        </div>
-      </div>
+    <div className="profile-theme min-h-screen bg-background text-foreground">
+      <main className="mx-auto max-w-lg px-5 pb-32 pt-6 sm:pt-8">
+        <header className="mb-5 flex items-center justify-between">
+          <h1 className="profile-display text-[22px] font-semibold">Meu perfil</h1>
+          <div className="flex gap-2">
+            <ThemeToggle />
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-border bg-secondary text-muted-foreground" onClick={async () => { await signOut(); navigate("/auth"); }} aria-label="Sair">
+              <LogOut size={17} />
+            </Button>
+          </div>
+        </header>
 
-
-      {/* Avatar */}
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center mb-8">
-        <div className="relative">
-          <div className="w-28 h-28 rounded-full bg-secondary border border-border/50 p-1">
-            <div className="w-full h-full rounded-full bg-background flex items-center justify-center overflow-hidden border border-border/30">
-              {local.avatar_url ? (
-                <SafeImg src={local.avatar_url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <User size={42} className="text-muted-foreground/30" />
-              )}
+        <section className="profile-identity">
+          <div className="profile-avatar">
+            {local.avatar_url ? <SafeImg src={local.avatar_url} alt={`Foto de ${local.name}`} className="h-full w-full object-cover" /> : initials}
+            <Button size="icon" className="profile-camera" onClick={() => fileRef.current?.click()} disabled={uploadingAvatar} aria-label="Trocar foto">
+              {uploadingAvatar ? <Loader2 className="animate-spin" /> : <Camera />}
+            </Button>
+            <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatarPick} className="hidden" />
+          </div>
+          <div className="min-w-0 flex-1 pb-0.5">
+            <p className="profile-display truncate text-[19px] font-semibold">{local.name || "Sem nome"}</p>
+            <button type="button" onClick={() => local.username && navigate(`/u/${local.username}`)} className="mt-0.5 flex min-h-6 items-center gap-1 text-[13px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              @{local.username || "usuario"}<ExternalLink size={12} />
+            </button>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              <span className="profile-badge profile-badge-level">{selectedLevel}</span>
+              <span className="profile-badge profile-badge-goal">{selectedGoal}</span>
             </div>
           </div>
-          <button
-            onClick={() => fileRef.current?.click()}
-            disabled={uploadingAvatar}
-            className="absolute bottom-0 right-0 w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow-lg disabled:opacity-60"
-            aria-label="Trocar foto"
-          >
-            {uploadingAvatar ? <Loader2 size={14} className="animate-spin text-primary-foreground" /> : <Camera size={14} className="text-primary-foreground" />}
-          </button>
-          <input ref={fileRef} type="file" accept="image/*" onChange={handleAvatarPick} className="hidden" />
-        </div>
-        <p className="text-base font-medium text-foreground mt-4">{local.name || "Sem nome"}</p>
-        <p className="text-[12px] text-muted-foreground mt-0.5 tracking-tight capitalize font-medium">{local.level} • {local.goal.replace("_", " ")}</p>
+        </section>
 
-      </motion.div>
+        <section className="profile-ticker" aria-label="Medidas corporais">
+          <MetricCell label="Idade" value={local.age} unit="anos" onDecrease={() => set({ age: Math.max(12, local.age - 1) })} onIncrease={() => set({ age: Math.min(99, local.age + 1) })} />
+          <MetricCell label="Peso" value={local.weight} unit="kg" onDecrease={() => set({ weight: Math.max(30, local.weight - 1) })} onIncrease={() => set({ weight: Math.min(250, local.weight + 1) })} />
+          <MetricCell label="Altura" value={local.height} unit="cm" onDecrease={() => set({ height: Math.max(130, local.height - 1) })} onIncrease={() => set({ height: Math.min(230, local.height + 1) })} />
+        </section>
 
-      <div className="space-y-6">
-        {/* Basic info */}
-        <section className="space-y-3">
-          <SectionTitle icon={Settings}>Informações</SectionTitle>
-          <button
-            onClick={() => local.username && navigate(`/u/${local.username}`)}
-            className="w-full bg-secondary border border-border/50 rounded-xl px-4 py-3 flex items-center justify-between text-left hover:bg-secondary/80 transition-all"
-          >
-            <div>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-tight font-medium mb-0.5">Ver perfil público</p>
-              <p className="text-[13px] font-medium text-foreground">@{local.username}</p>
+        <div className="space-y-8">
+          <ProfileSection title="Informações pessoais">
+            <div className="space-y-3">
+              <Field label="Nome de usuário">
+                <input value={local.username || ""} onChange={(e) => set({ username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "_").slice(0, 30) })} placeholder="seu_usuario" className="profile-input" />
+              </Field>
+              <Field label="Nome">
+                <input value={local.name} onChange={(e) => set({ name: e.target.value.slice(0, 60) })} placeholder="Seu nome" className="profile-input" />
+              </Field>
+              <Field label="Bio">
+                <textarea value={local.bio || ""} onChange={(e) => set({ bio: e.target.value.slice(0, 200) })} placeholder="Conte um pouco sobre você" rows={2} className="profile-input resize-none" />
+              </Field>
+              <Button variant="outline" onClick={() => set({ is_private: !local.is_private })} className="h-auto w-full justify-between whitespace-normal rounded-[14px] border-border bg-secondary px-4 py-3 text-left">
+                <span className="flex items-center gap-3">
+                  {local.is_private ? <Lock className="text-primary" /> : <Globe className="text-primary" />}
+                  <span><span className="block text-[13px] text-foreground">{local.is_private ? "Conta privada" : "Conta pública"}</span><span className="block text-[11px] font-normal text-muted-foreground">{local.is_private ? "Você aprova novos seguidores" : "Qualquer pessoa pode seguir você"}</span></span>
+                </span>
+                <span className={`profile-switch ${local.is_private ? "is-on" : ""}`}><span /></span>
+              </Button>
             </div>
-            <ExternalLink size={14} className="text-primary" />
-          </button>
-          <div>
-            <Label>Nome de usuário (@)</Label>
-            <input
-              type="text"
-              value={local.username || ""}
-              onChange={(e) => set({ username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "_").slice(0, 30) })}
-              placeholder="seu_username"
-              className="w-full bg-secondary border border-border/50 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
-            />
-          </div>
+          </ProfileSection>
 
-          <div>
-            <Label>Nome</Label>
-            <input
-              type="text"
-              value={local.name}
-              onChange={(e) => set({ name: e.target.value.slice(0, 60) })}
-              placeholder="Seu nome"
-              className="w-full bg-secondary border border-border/50 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50"
-            />
-          </div>
+          <ProfileSection title="Nível de experiência">
+            <div className="profile-segmented">
+              {levels.map((item) => <button key={item.value} type="button" className={`profile-segment ${local.level === item.value ? "is-active" : ""}`} onClick={() => set({ level: item.value })}><span>{item.label}</span><small>{item.desc}</small></button>)}
+            </div>
+          </ProfileSection>
 
-          <div>
-            <Label>Bio</Label>
-            <textarea
-              value={local.bio || ""}
-              onChange={(e) => set({ bio: e.target.value.slice(0, 200) })}
-              placeholder="Conte um pouco sobre você..."
-              rows={2}
-              className="w-full bg-secondary border border-border/50 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none"
-            />
-          </div>
+          <ProfileSection title="Objetivo principal">
+            <div className="flex flex-wrap gap-2">
+              {goals.map((item) => <button key={item.value} type="button" className={`profile-chip ${local.goal === item.value ? "is-active" : ""}`} onClick={() => set({ goal: item.value })}><span />{item.label}</button>)}
+            </div>
+          </ProfileSection>
 
-          <button
-            onClick={() => set({ is_private: !local.is_private })}
-            className="w-full bg-secondary border border-border/50 rounded-xl px-4 py-3 flex items-center justify-between text-left"
-          >
-            <div className="flex items-center gap-3">
-              {local.is_private ? <Lock size={16} className="text-primary" /> : <Globe size={16} className="text-primary" />}
-              <div>
-                <p className="text-[13px] font-medium text-foreground">{local.is_private ? "Conta privada" : "Conta pública"}</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">{local.is_private ? "Aprovação manual de seguidores" : "Qualquer um pode te seguir"}</p>
+          <ProfileSection title="Biotipo" hint={`${bodyTypes.findIndex((item) => item.value === local.body_type) + 1} de 3`}>
+            <div className="profile-biotypes">
+              {bodyTypes.map((item) => {
+                const active = local.body_type === item.value;
+                return <button key={item.value} type="button" className={`profile-biotype ${active ? "is-active" : ""}`} onClick={() => set({ body_type: item.value })}><span className="profile-biotype-bar" /><span className="min-w-0 text-left"><strong>{item.label}</strong><small>{item.desc}</small></span><span className="profile-check">{active && <Check size={12} />}</span></button>;
+              })}
+            </div>
+          </ProfileSection>
+
+          <ProfileSection title="Sono">
+            <SliderPanel label="Horas por noite" value={`${local.sleep_hours}h`} minLabel="4h" maxLabel="10h">
+              <input className="profile-range" type="range" min={4} max={10} step={0.5} value={local.sleep_hours} onChange={(e) => set({ sleep_hours: Number(e.target.value) })} aria-label="Horas de sono por noite" />
+              <div className="profile-choice-row mt-5">
+                {sleepQualities.map((item) => <button key={item.value} type="button" className={local.sleep_quality === item.value ? "is-active" : ""} onClick={() => set({ sleep_quality: item.value })}><span>{item.emoji}</span>{item.label}</button>)}
               </div>
-            </div>
-            <div className={`w-10 h-6 rounded-full p-1 transition-colors duration-300 ${local.is_private ? "bg-primary" : "bg-muted"}`}>
-              <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-300 ${local.is_private ? "translate-x-4" : ""}`} />
-            </div>
-          </button>
+            </SliderPanel>
+          </ProfileSection>
 
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <Label>Idade</Label>
-              <NumberStepper value={local.age} onChange={(v) => set({ age: v })} min={12} max={99} suffix="a" />
-            </div>
-            <div>
-              <Label>Peso</Label>
-              <NumberStepper value={local.weight} onChange={(v) => set({ weight: v })} min={30} max={250} suffix="kg" />
-            </div>
-            <div>
-              <Label>Altura</Label>
-              <NumberStepper value={local.height} onChange={(v) => set({ height: v })} min={130} max={230} suffix="cm" />
-            </div>
-          </div>
-        </section>
+          <ProfileSection title="Treino">
+            <SliderPanel label="Frequência semanal" value={`${local.weekly_frequency}x`} minLabel="2x" maxLabel="7x">
+              <input className="profile-range" type="range" min={2} max={7} value={local.weekly_frequency} onChange={(e) => set({ weekly_frequency: Number(e.target.value) })} aria-label="Frequência semanal de treino" />
+              <div className="profile-choice-row mt-5">
+                {trainingTimes.map((item) => <button key={item.value} type="button" className={local.training_time === item.value ? "is-active" : ""} onClick={() => set({ training_time: item.value })}><span>{item.emoji}</span>{item.label}</button>)}
+              </div>
+            </SliderPanel>
+          </ProfileSection>
 
-        {/* Level */}
-        <section>
-          <SectionTitle>Nível de experiência</SectionTitle>
-          <CardChips options={levels} value={local.level} onChange={(v) => set({ level: v })} cols={3} />
-        </section>
+          <Button onClick={handleSave} disabled={saving} className="profile-save h-14 w-full rounded-[14px] text-[14px] font-semibold">
+            {saving && <Loader2 className="animate-spin" />}{saving ? "Salvando..." : "Salvar perfil"}
+          </Button>
 
-        {/* Goal */}
-        <section>
-          <SectionTitle>Objetivo principal</SectionTitle>
-          <div className="grid grid-cols-2 gap-3">
-            {goals.map((g) => {
-              const active = local.goal === g.value;
-              return (
-                <motion.button
-                  key={g.value}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => set({ goal: g.value })}
-                  className={`p-3.5 rounded-xl flex items-center gap-2.5 border transition-all ${
-                    active
-                      ? "bg-[hsl(var(--bg-success))] border-primary"
-                      : "bg-secondary border-border/50"
-                  }`}
-                >
-                  <span className="text-lg">{g.emoji}</span>
-                  <span className={`text-[12px] font-medium ${active ? "text-primary" : "text-muted-foreground"}`}>{g.label}</span>
-                </motion.button>
-              );
-            })}
-          </div>
-
-        </section>
-
-        {/* Body type */}
-        <section>
-          <SectionTitle>Biotipo</SectionTitle>
-          <CardChips options={bodyTypes} value={local.body_type} onChange={(v) => set({ body_type: v })} cols={1} />
-        </section>
-
-        {/* Sleep */}
-        <section className="space-y-3">
-          <SectionTitle>Sono</SectionTitle>
-          <div>
-            <Label>Horas de sono: <span className="text-primary font-medium">{local.sleep_hours}h</span></Label>
-
-            <input
-              type="range"
-              min={4}
-              max={10}
-              step={0.5}
-              value={local.sleep_hours}
-              onChange={(e) => set({ sleep_hours: Number(e.target.value) })}
-              className="w-full accent-primary"
-            />
-          </div>
-          <div>
-            <Label>Qualidade</Label>
-            <CardChips options={sleepQualities} value={local.sleep_quality} onChange={(v) => set({ sleep_quality: v })} cols={4} />
-          </div>
-        </section>
-
-        {/* Training */}
-        <section className="space-y-3">
-          <SectionTitle>Treino</SectionTitle>
-          <div>
-            <Label>Frequência semanal: <span className="text-primary font-medium">{local.weekly_frequency}x</span></Label>
-
-            <input
-              type="range"
-              min={2}
-              max={7}
-              value={local.weekly_frequency}
-              onChange={(e) => set({ weekly_frequency: Number(e.target.value) })}
-              className="w-full accent-primary"
-            />
-          </div>
-          <div>
-            <Label>Horário preferido</Label>
-            <CardChips options={trainingTimes} value={local.training_time} onChange={(v) => set({ training_time: v })} cols={3} />
-          </div>
-        </section>
-
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={handleSave}
-          disabled={saving}
-          className="w-full bg-primary text-primary-foreground font-semibold py-4 rounded-xl flex items-center justify-center gap-2.5 disabled:opacity-60 transition-all"
-        >
-          {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-          {saving ? "Salvando..." : "Salvar Perfil"}
-        </motion.button>
-
-
-        <SmartwatchPanel />
-
-        <button
-          onClick={() => navigate("/nutrition")}
-          className="w-full bg-secondary border border-border/50 text-foreground font-medium py-3.5 rounded-xl flex items-center justify-center gap-2.5 hover:bg-secondary/80 transition-all"
-        >
-          <Apple size={16} className="text-primary" />
-          Ver minha nutrição
-        </button>
-
-      </div>
-
+          <SmartwatchPanel />
+          <Button variant="outline" onClick={() => navigate("/nutrition")} className="h-12 w-full rounded-[14px] border-border bg-secondary text-foreground"><Apple className="text-primary" />Ver minha nutrição</Button>
+        </div>
+      </main>
       <BottomNav />
     </div>
   );
 }
 
-function SectionTitle({ children, icon: Icon }: { children: React.ReactNode; icon?: any }) {
-  return (
-    <h2 className="text-[11px] font-medium uppercase tracking-tight text-muted-foreground mb-3 px-1 flex items-center gap-1.5">
-      {Icon && <Icon size={12} />}
-      {children}
-    </h2>
-  );
+function ProfileSection({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+  return <section><div className="mb-3 flex items-baseline justify-between"><h2 className="profile-display text-[16px] font-semibold">{title}</h2>{hint && <span className="text-[12px] text-muted-foreground/60">{hint}</span>}</div>{children}</section>;
 }
 
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return <label className="block"><span className="mb-1.5 block text-[12px] text-muted-foreground">{label}</span>{children}</label>;
+}
 
-function Label({ children }: { children: React.ReactNode }) {
-  return <label className="text-[12px] font-medium text-muted-foreground mb-1.5 px-1 block">{children}</label>;
+function MetricCell({ label, value, unit, onDecrease, onIncrease }: { label: string; value: number; unit: string; onDecrease: () => void; onIncrease: () => void }) {
+  return <div className="profile-metric"><span className="text-[11px] text-muted-foreground/60">{label}</span><div className="mt-4 flex items-baseline gap-1"><strong className="profile-display text-[20px] font-semibold">{value}</strong><span className="text-[11px] text-muted-foreground">{unit}</span></div><div className="mt-2 flex gap-1"><Button variant="ghost" size="icon" className="h-6 w-6 rounded-md bg-muted text-muted-foreground" onClick={onDecrease} aria-label={`Diminuir ${label.toLowerCase()}`}>−</Button><Button variant="ghost" size="icon" className="h-6 w-6 rounded-md bg-muted text-muted-foreground" onClick={onIncrease} aria-label={`Aumentar ${label.toLowerCase()}`}>+</Button></div></div>;
+}
+
+function SliderPanel({ label, value, minLabel, maxLabel, children }: { label: string; value: string; minLabel: string; maxLabel: string; children: React.ReactNode }) {
+  return <div className="rounded-[16px] border border-border bg-secondary p-4"><div className="mb-3 flex items-center justify-between"><span className="text-[13px] text-muted-foreground">{label}</span><strong className="profile-display text-[19px] font-semibold text-primary">{value}</strong></div>{children}<div className="mt-1 flex justify-between text-[10px] text-muted-foreground/60"><span>{minLabel}</span><span>{maxLabel}</span></div></div>;
 }
