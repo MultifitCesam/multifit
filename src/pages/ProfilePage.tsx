@@ -11,6 +11,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import AvatarCropDialog from "@/components/AvatarCropDialog";
 
 const levels = [
   { value: "iniciante", label: "Iniciante", desc: "começando" },
@@ -52,11 +53,14 @@ export default function ProfilePage() {
   const [local, setLocal] = useState(profile);
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarSource, setAvatarSource] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (profile) setLocal(profile);
   }, [profile]);
+
+  useEffect(() => () => { if (avatarSource) URL.revokeObjectURL(avatarSource); }, [avatarSource]);
 
   if (loading || !local) {
     return <div className="profile-theme min-h-screen grid place-items-center"><Loader2 className="animate-spin text-primary" aria-label="Carregando perfil" /></div>;
@@ -66,6 +70,7 @@ export default function ProfilePage() {
 
   const handleAvatarPick = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    event.target.value = "";
     if (!file || !user) return;
     if (!file.type.startsWith("image/")) {
       toast({ title: "Selecione uma imagem", variant: "destructive" });
@@ -75,18 +80,29 @@ export default function ProfilePage() {
       toast({ title: "Imagem muito grande", description: "Máximo 5 MB", variant: "destructive" });
       return;
     }
+    setAvatarSource(URL.createObjectURL(file));
+  };
+
+  const saveAvatar = async (file: Blob) => {
+    if (!user) return;
     setUploadingAvatar(true);
     try {
-      const ext = file.name.split(".").pop() || "jpg";
-      const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+      const path = `${user.id}/avatar-${crypto.randomUUID()}.jpg`;
       const { error } = await supabase.storage.from("avatars").upload(path, file, { contentType: file.type, upsert: true });
       if (error) throw error;
       const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+      const result = await updateProfile({ avatar_url: data.publicUrl });
+      const profileError = result?.error;
+      if (profileError) {
+        await supabase.storage.from("avatars").remove([path]);
+        throw profileError;
+      }
       set({ avatar_url: data.publicUrl });
-      await updateProfile({ avatar_url: data.publicUrl });
+      setAvatarSource(null);
       toast({ title: "Foto atualizada" });
     } catch (error) {
       toast({ title: "Erro ao enviar foto", description: error instanceof Error ? error.message : undefined, variant: "destructive" });
+      throw error;
     } finally {
       setUploadingAvatar(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -223,6 +239,7 @@ export default function ProfilePage() {
           <Button variant="outline" onClick={() => navigate("/nutrition")} className="h-12 w-full rounded-[14px] border-border bg-secondary text-foreground"><Apple className="text-primary" />Ver minha nutrição</Button>
         </div>
       </main>
+      <AvatarCropDialog source={avatarSource} busy={uploadingAvatar} onClose={() => setAvatarSource(null)} onSave={saveAvatar} />
       <BottomNav />
     </div>
   );

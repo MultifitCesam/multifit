@@ -134,12 +134,14 @@
   .profile-avatar {
     @apply relative grid h-[76px] w-[76px] shrink-0 place-items-center overflow-visible text-[30px] font-bold text-primary-foreground;
     font-family: "Bricolage Grotesque Variable", sans-serif;
-    border-radius: 20px;
+    border-radius: 50%;
     background: linear-gradient(155deg, hsl(var(--profile-orange)), hsl(var(--profile-orange-dark)));
     box-shadow: 0 12px 26px -14px hsl(var(--profile-orange) / 0.65);
   }
 
-  .profile-avatar > img { border-radius: 20px; }
+  .profile-avatar > img { border-radius: 50%; }
+  .avatar-crop-stage { position: relative; width: 100%; height: min(320px, 42vh); overflow: hidden; background: hsl(var(--secondary)); }
+  .avatar-crop-stage .reactEasyCrop_CropArea { color: hsl(var(--background) / 0.7); border-color: hsl(var(--primary)); }
   .profile-camera { @apply absolute -bottom-1.5 -right-1.5 h-7 w-7 rounded-lg border-[3px] border-background bg-primary text-primary-foreground; }
   .profile-camera svg { @apply h-3 w-3; }
   .profile-badge { @apply rounded-full border px-2.5 py-1 text-[11px] font-semibold; }

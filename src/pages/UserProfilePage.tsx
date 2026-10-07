@@ -1,8 +1,9 @@
 import { SafeImg, SafeVideo } from "@/components/SafeMedia";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronLeft, Lock, MessageCircle, Loader2, Grid3x3, Info, Trophy, UserPlus, UserCheck, Clock, Settings } from "lucide-react";
+import { ChevronLeft, Lock, MessageCircle, Loader2, Grid3x3, Info, Trophy, UserPlus, UserCheck, Clock, Settings, Pin, PinOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import BottomNav from "@/components/BottomNav";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,6 +19,7 @@ interface PostLite {
   likes_count: number;
   comments_count: number;
   created_at: string;
+  is_pinned: boolean;
 }
 
 export default function UserProfilePage() {
@@ -28,6 +30,7 @@ export default function UserProfilePage() {
   const [posts, setPosts] = useState<PostLite[]>([]);
   const [tab, setTab] = useState<"posts" | "about" | "achievements">("posts");
   const [loading, setLoading] = useState(true);
+  const [pinning, setPinning] = useState<string | null>(null);
 
   const isMe = user && profile && user.id === profile.user_id;
   const follow = useFollow(profile?.user_id, profile?.is_private ?? false);
@@ -43,17 +46,37 @@ export default function UserProfilePage() {
       if (cancel) return;
       if (!data) { setLoading(false); return; }
       setProfile(data as unknown as DBProfile);
-      const canViewPosts = !data.is_private || (user && data.user_id === user.id);
-      if (canViewPosts) {
-        const { data: ps } = await supabase
-          .from("posts").select("id, media_url, media_type, caption, likes_count, comments_count, created_at")
-          .eq("user_id", data.user_id).order("created_at", { ascending: false }).limit(60);
-        if (!cancel) setPosts((ps ?? []) as PostLite[]);
-      }
       setLoading(false);
     })();
     return () => { cancel = true; };
   }, [username, user?.id]);
+
+  const canSeePosts = Boolean(profile && (!profile.is_private || isMe || follow.state === "accepted"));
+  const loadPosts = useCallback(async () => {
+    if (!profile || !canSeePosts) { setPosts([]); return; }
+    const { data, error } = await supabase.from("posts")
+      .select("id, media_url, media_type, caption, likes_count, comments_count, created_at, is_pinned")
+      .eq("user_id", profile.user_id)
+      .order("is_pinned", { ascending: false })
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false }).limit(60);
+    if (error) { toast({ title: "Erro ao carregar posts", variant: "destructive" }); return; }
+    setPosts(data ?? []);
+  }, [profile, canSeePosts]);
+  useEffect(() => {
+    void loadPosts();
+    window.addEventListener("focus", loadPosts);
+    return () => window.removeEventListener("focus", loadPosts);
+  }, [loadPosts]);
+
+  const togglePin = async (post: PostLite) => {
+    if (!user || !isMe || pinning) return;
+    setPinning(post.id);
+    const { error } = await supabase.from("posts").update({ is_pinned: !post.is_pinned }).eq("id", post.id).eq("user_id", user.id);
+    if (error) toast({ title: "Não foi possível alterar a fixação", variant: "destructive" });
+    else await loadPosts();
+    setPinning(null);
+  };
 
   const startChat = async () => {
     if (!user || !profile) return;
@@ -74,7 +97,6 @@ export default function UserProfilePage() {
     );
   }
 
-  const canSeePosts = !profile.is_private || isMe || follow.state === "accepted";
   const postsCount = posts.length;
 
   let followLabel = "Seguir";
@@ -166,11 +188,12 @@ export default function UserProfilePage() {
           ) : (
             <div className="grid grid-cols-3 gap-0.5">
               {posts.map((p) => (
+                <div key={p.id} className="relative aspect-square" data-post-id={p.id}>
                 <motion.button
-                  key={p.id}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => navigate(`/community#post-${p.id}`)}
-                  className="aspect-square bg-secondary relative overflow-hidden"
+                  aria-label={p.caption || "Abrir publicação"}
+                  className="h-full w-full bg-secondary relative overflow-hidden"
                 >
                   {p.media_url && p.media_type === "image" && (
                     <SafeImg src={p.media_url} alt="" className="w-full h-full object-cover" loading="lazy" />
@@ -182,6 +205,10 @@ export default function UserProfilePage() {
                     <div className="w-full h-full flex items-center justify-center p-2 text-[10px] text-muted-foreground line-clamp-4">{p.caption}</div>
                   )}
                 </motion.button>
+                {isMe ? <Button variant="secondary" size="icon" className="absolute right-1 top-1 h-7 w-7 rounded-full" disabled={Boolean(pinning)} onClick={() => togglePin(p)} aria-label={p.is_pinned ? "Desafixar publicação" : "Fixar publicação"} title={p.is_pinned ? "Desafixar publicação" : "Fixar publicação"}>
+                  {pinning === p.id ? <Loader2 size={12} className="animate-spin" /> : p.is_pinned ? <PinOff size={12} /> : <Pin size={12} />}
+                </Button> : p.is_pinned && <span className="absolute right-1 top-1 rounded-full bg-secondary p-1 text-primary" aria-label="Publicação fixada"><Pin size={12} /></span>}
+                </div>
               ))}
             </div>
           )}

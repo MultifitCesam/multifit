@@ -1,0 +1,2 @@
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS is_pinned boolean NOT NULL DEFAULT false;
+CREATE INDEX IF NOT EXISTS posts_profile_order_idx ON public.posts (user_id, is_pinned DESC, created_at DESC, id DESC);
