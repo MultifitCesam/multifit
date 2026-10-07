@@ -53,12 +53,13 @@ export function useProfile() {
 
   const updateProfile = async (updates: Partial<DBProfile>) => {
     if (!user) return;
-    setProfile(prev => (prev ? { ...prev, ...updates } : prev));
     const { error } = await supabase
       .from("profiles")
       .update(updates)
       .eq("user_id", user.id);
     if (error) console.error(error);
+    else setProfile(prev => (prev ? { ...prev, ...updates } : prev));
+    return { error };
   };
 
   return { profile, loading, updateProfile, reload: load };

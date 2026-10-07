@@ -91,7 +91,8 @@ export default function ProfilePage() {
       const { error } = await supabase.storage.from("avatars").upload(path, file, { contentType: file.type, upsert: true });
       if (error) throw error;
       const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-      const { error: profileError } = await supabase.from("profiles").update({ avatar_url: data.publicUrl }).eq("user_id", user.id);
+      const result = await updateProfile({ avatar_url: data.publicUrl });
+      const profileError = result?.error;
       if (profileError) {
         await supabase.storage.from("avatars").remove([path]);
         throw profileError;
