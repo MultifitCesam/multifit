@@ -385,6 +385,7 @@ export type Database = {
           comments_count: number
           created_at: string
           id: string
+          is_pinned: boolean
           likes_count: number
           media_type: string | null
           media_url: string | null
@@ -398,6 +399,7 @@ export type Database = {
           comments_count?: number
           created_at?: string
           id?: string
+          is_pinned?: boolean
           likes_count?: number
           media_type?: string | null
           media_url?: string | null
@@ -411,6 +413,7 @@ export type Database = {
           comments_count?: number
           created_at?: string
           id?: string
+          is_pinned?: boolean
           likes_count?: number
           media_type?: string | null
           media_url?: string | null
