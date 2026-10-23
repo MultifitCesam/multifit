@@ -19,7 +19,7 @@ export default function InstallPrompt() {
   const [ios, setIos] = useState(false);
 
   useEffect(() => {
-    if (isStandalone() || window.self !== window.top) return;
+    if (isStandalone() || window.self !== window.top || window.location.pathname.startsWith("/auth")) return;
     const last = Number(localStorage.getItem(KEY) || 0);
     if (Date.now() - last < 3 * 24 * 3600 * 1000) return;
 
