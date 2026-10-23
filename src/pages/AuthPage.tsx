@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
 import logo from "@/assets/multifit-logo.png";
 import { getKeepLoggedIn, setKeepLoggedIn } from "@/lib/auth-persistence";
+import InstallBanner from "@/components/InstallBanner";
 
 const signUpSchema = z.object({
   name: z.string().trim().min(2, "Mínimo 2 caracteres").max(60),
@@ -104,6 +105,8 @@ export default function AuthPage() {
             {mode === "login" ? "Bem-vindo de volta" : "Comece sua evolução"}
           </p>
         </div>
+
+        <InstallBanner />
 
         <div className="bg-secondary border border-border/50 rounded-[24px] p-8 relative overflow-hidden">
 
