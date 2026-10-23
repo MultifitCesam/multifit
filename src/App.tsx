@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import InstallPrompt from "@/components/InstallPrompt";
 import HomePage from "./pages/HomePage";
 import WorkoutsPage from "./pages/WorkoutsPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -29,6 +30,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
+      <InstallPrompt />
       <BrowserRouter>
         <AuthProvider>
           <Routes>
